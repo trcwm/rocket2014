@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QClipboard>
+#include <QFontDatabase>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -16,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_registerView = new RegisterView(this);
     ui->debugLayout->addWidget(m_registerView);
 
+    m_disasm = new QTextEdit(this);
+    ui->debugLayout->addWidget(m_disasm);
+
     // setup Z80 system and connect
     // the signals and slots
     m_sys = new Z80SystemThread(m_console, this);
@@ -29,6 +33,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_debugTimer = new QTimer(this);
     connect(m_debugTimer, SIGNAL(timeout()), this, SLOT(onDebugTimer()));
     m_debugTimer->start(500);
+
+    QFont disasmFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    QFontMetrics disasmFontMetrics(disasmFont);
+    m_disasm->setFont(disasmFont);
+    m_disasm->setMinimumWidth(disasmFontMetrics.width("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"));
+    //m_disasm->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::ExpandFlag);
+    m_disasm->updateGeometry();
 }
 
 MainWindow::~MainWindow()
@@ -101,6 +112,13 @@ void MainWindow::onDebugTimer()
     m_registerView->setRegisterValue(12, m_sys->getRegister(Z80SystemBase::REG_SP));
     m_registerView->setRegisterValue(13, m_sys->getRegister(Z80SystemBase::REG_PC));
     m_registerView->update();
+
+    char buffer[1024];
+    m_sys->getDisassembly(buffer, sizeof(buffer), m_sys->getRegister(Z80SystemBase::REG_PC), 10);
+    if (m_disasm != 0)
+    {
+        m_disasm->setText(buffer);
+    }
 }
 
 void MainWindow::on_actionLoad_ROM_triggered()

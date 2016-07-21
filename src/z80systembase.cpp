@@ -70,6 +70,17 @@ uint8_t Z80SystemBase::readMemory(uint16_t address)
     return 0xFF;    // return HALT instruction
 }
 
+uint16_t Z80SystemBase::readMemory16(uint16_t address)
+{
+    // memory map:
+    // 0x0000 .. 0x1FFF ROM (8k)
+    // 0x8000 .. 0xFFFF RAM (32k)
+
+    uint16_t word = ((uint16_t)readMemory(address)) << 16;
+    word |= ((uint16_t)readMemory(address+1));
+
+    return word;
+}
 
 void Z80SystemBase::writeMemory(uint16_t address, uint8_t data)
 {

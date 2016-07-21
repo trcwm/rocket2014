@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <QTextEdit>
 #include "z80systemthread.h"
 #include "consoleview.h"
 #include "registerwindow.h"
@@ -31,6 +32,7 @@ private:
     ConsoleView     *m_console;
     RegisterView    *m_registerView;
     Z80SystemThread *m_sys;
+    QTextEdit       *m_disasm;
 
     QTimer          *m_debugTimer;
 };

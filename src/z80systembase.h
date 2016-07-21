@@ -37,6 +37,9 @@ public:
     /** get a register value */
     virtual uint16_t getRegister(reg_t regID) const = 0;
 
+    /** get disassembly */
+    virtual bool getDisassembly(char *txtBufferPtr, size_t txtBufferSize, uint16_t address, uint32_t instructions) = 0;
+
     virtual void execute(uint32_t instructions) = 0;
     virtual void interrupt() = 0;
     virtual void reset()
@@ -46,6 +49,8 @@ public:
 
 protected:
     uint8_t readMemory(uint16_t address);
+    uint16_t readMemory16(uint16_t address);
+
     void    writeMemory(uint16_t address, uint8_t data);
     uint8_t readIO(uint16_t address);
     void    writeIO(uint16_t address, uint8_t data);

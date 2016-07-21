@@ -68,6 +68,30 @@ uint16_t Z80System_Z80ex::getRegister(Z80SystemBase::reg_t regID) const
     }
 }
 
+bool Z80System_Z80ex::getDisassembly(char *txtBufferPtr, size_t txtBufferSize, uint16_t address, uint32_t instructions)
+{
+    if (m_context == 0) return false;
+
+    int dummy1, dummy2;
+    while((txtBufferSize > 0) && (instructions > 0))
+    {
+        uint16_t instrLen = z80ex_dasm(txtBufferPtr, txtBufferSize, 0, &dummy1, &dummy2, ex_readMemory, address, this);
+        size_t txtLen = strlen(txtBufferPtr);
+        txtBufferSize -= txtLen;
+        txtBufferPtr += txtLen;
+        if (txtBufferSize > 2)
+        {
+            txtBufferPtr[0] = 10;
+            txtBufferPtr[1] = 0;
+            txtBufferPtr++;
+            txtBufferSize--;
+        }
+        address += instrLen;
+        instructions--;
+    }
+
+    return true;
+}
 
 void Z80System_Z80ex::execute(uint32_t instructions)
 {
@@ -86,6 +110,17 @@ uint8_t Z80System_Z80ex::ex_readMemory(Z80EX_CONTEXT *ctx, uint16_t address, int
     }
     return 0;
 }
+
+uint8_t Z80System_Z80ex::ex_readMemory(uint16_t address, void *userdata)
+{
+    if (userdata != 0)
+    {
+        Z80System_Z80ex *obj = (Z80System_Z80ex*)userdata;
+        return obj->readMemory(address);
+    }
+    return 0;
+}
+
 
 uint8_t Z80System_Z80ex::ex_readIO(Z80EX_CONTEXT *ctx, uint16_t address, void *userdata)
 {

@@ -94,3 +94,8 @@ uint16_t Z80SystemThread::getRegister(Z80SystemBase::reg_t regID) const
 {
     return m_z80->getRegister(regID);
 }
+
+bool Z80SystemThread::getDisassembly(char *txtBuffer, size_t txtBufferSize, uint16_t address, uint32_t instructions)
+{
+    return m_z80->getDisassembly(txtBuffer, txtBufferSize, address, instructions);
+}

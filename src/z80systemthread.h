@@ -39,6 +39,9 @@ public:
     /** get Z80 register value */
     uint16_t getRegister(Z80SystemBase::reg_t regID) const;
 
+    /** get disassembly text */
+    bool getDisassembly(char *txtBuffer, size_t txtBufferSize, uint16_t address, uint32_t instructions);
+
 protected:
     virtual void run();
 
