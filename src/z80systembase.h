@@ -32,7 +32,10 @@ public:
     /** load a file into the ROM */
     bool loadROM(const char *filename);
 
-    virtual uint16_t getPC() const = 0;
+    enum reg_t {REG_A, REG_B, REG_C, REG_D, REG_E, REG_H, REG_L, REG_IX, REG_IY, REG_SP, REG_PC, REG_HL, REG_DE, REG_BC};
+
+    /** get a register value */
+    virtual uint16_t getRegister(reg_t regID) const = 0;
 
     virtual void execute(uint32_t instructions) = 0;
     virtual void interrupt() = 0;

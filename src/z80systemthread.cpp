@@ -90,7 +90,7 @@ void Z80SystemThread::putSerialData(uint8_t c)
     m_rxFIFO.push(c);
 }
 
-uint16_t Z80SystemThread::getPC() const
+uint16_t Z80SystemThread::getRegister(Z80SystemBase::reg_t regID) const
 {
-    return m_z80->getPC();
+    return m_z80->getRegister(regID);
 }

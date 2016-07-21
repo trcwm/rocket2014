@@ -36,8 +36,8 @@ public:
     /** reset the system */
     void reset();
 
-    /** get Z80 program counter value */
-    uint16_t getPC() const;
+    /** get Z80 register value */
+    uint16_t getRegister(Z80SystemBase::reg_t regID) const;
 
 protected:
     virtual void run();

@@ -28,6 +28,7 @@ SOURCES += main.cpp\
         mainwindow.cpp \
         textblitter.cpp \
         consoleview.cpp \
+        registerwindow.cpp \
         z80systemthread.cpp \
         z80systembase.cpp \
         z80system_libz80.cpp \
@@ -39,6 +40,7 @@ HEADERS  += mainwindow.h \
             z80systembase.h \
             textblitter.h \
             consoleview.h \
+            registerwindow.h \
             z80systemthread.h \
             z80system_libz80.h \
             z80system_z80ex.h \

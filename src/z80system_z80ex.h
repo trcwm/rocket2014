@@ -20,7 +20,7 @@ class Z80System_Z80ex : public Z80SystemBase
 public:
     Z80System_Z80ex(ConsoleView *console);
 
-    virtual uint16_t getPC() const;
+    virtual uint16_t getRegister(Z80SystemBase::reg_t regID) const;
 
     virtual void reset();
     virtual void interrupt();

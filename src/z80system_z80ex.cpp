@@ -29,12 +29,45 @@ void Z80System_Z80ex::interrupt()
     z80ex_int(m_context);
 }
 
-uint16_t Z80System_Z80ex::getPC() const
+uint16_t Z80System_Z80ex::getRegister(Z80SystemBase::reg_t regID) const
 {
     if (m_context == 0) return 0;
 
-    return z80ex_get_reg(m_context, regPC);
+    switch(regID)
+    {
+    case Z80SystemBase::REG_A:
+        return z80ex_get_reg(m_context, regAF) >> 8;
+    case Z80SystemBase::REG_B:
+        return z80ex_get_reg(m_context, regBC) >> 8;
+    case Z80SystemBase::REG_C:
+        return z80ex_get_reg(m_context, regBC) & 0xFF;
+    case Z80SystemBase::REG_D:
+        return z80ex_get_reg(m_context, regDE) >> 8;
+    case Z80SystemBase::REG_E:
+        return z80ex_get_reg(m_context, regDE) & 0xFF;
+    case Z80SystemBase::REG_H:
+        return z80ex_get_reg(m_context, regHL) >> 8;
+    case Z80SystemBase::REG_L:
+        return z80ex_get_reg(m_context, regHL) & 0xFF;
+    case Z80SystemBase::REG_IX:
+        return z80ex_get_reg(m_context, regBC);
+    case Z80SystemBase::REG_IY:
+        return z80ex_get_reg(m_context, regDE);
+    case Z80SystemBase::REG_BC:
+        return z80ex_get_reg(m_context, regBC);
+    case Z80SystemBase::REG_DE:
+        return z80ex_get_reg(m_context, regDE);
+    case Z80SystemBase::REG_HL:
+        return z80ex_get_reg(m_context, regHL);
+    case Z80SystemBase::REG_SP:
+        return z80ex_get_reg(m_context, regSP);
+    case Z80SystemBase::REG_PC:
+        return z80ex_get_reg(m_context, regPC);
+    default:
+        return 0;
+    }
 }
+
 
 void Z80System_Z80ex::execute(uint32_t instructions)
 {
