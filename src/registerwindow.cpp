@@ -70,7 +70,7 @@ void RegisterView::paintEvent(QPaintEvent *event)
         ypos += m_lineHeight;
     }
 
-    QWidget::paintEvent(event);
+    //QWidget::paintEvent(event);
 }
 
 void RegisterView::setRegisterValue(uint32_t index, uint32_t value)

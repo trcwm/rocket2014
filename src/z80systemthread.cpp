@@ -38,6 +38,7 @@ void Z80SystemThread::reset()
 {
     if (m_z80 != 0)
     {
+        QMutexLocker locker(&m_dbgMutex);
         m_z80->reset();
     }
 }
@@ -55,16 +56,6 @@ void Z80SystemThread::run()
 
     while (!m_quit)
     {
-        /*
-        if (m_resetRequest)
-        {
-            printf("Reset Z80\n");
-            m_intff = 0;
-            Z80RESET(&ctx);
-            m_resetRequest = false;
-        }
-        */
-
         // check for serial data in the queue
         m_queueMutex.lock();
         if (m_rxFIFO.size() != 0)
@@ -75,10 +66,11 @@ void Z80SystemThread::run()
             }
         }
         m_queueMutex.unlock();
-        m_z80->execute(10000);
-    }
 
-    //printf("Z80 Stopped at %04Xh (%05d dec)\n", ctx.PC, ctx.PC);
+        m_dbgMutex.lock();
+        m_z80->execute(10000);
+        m_dbgMutex.unlock();
+    }
 }
 
 void Z80SystemThread::putSerialData(uint8_t c)
@@ -90,12 +82,9 @@ void Z80SystemThread::putSerialData(uint8_t c)
     m_rxFIFO.push(c);
 }
 
-uint16_t Z80SystemThread::getRegister(Z80SystemBase::reg_t regID) const
+uint16_t Z80SystemThread::getRegister(Z80SystemBase::reg_t regID)
 {
+    QMutexLocker locker(&m_dbgMutex);
     return m_z80->getRegister(regID);
 }
 
-bool Z80SystemThread::getDisassembly(char *txtBuffer, size_t txtBufferSize, uint16_t address, uint32_t instructions)
-{
-    return m_z80->getDisassembly(txtBuffer, txtBufferSize, address, instructions);
-}

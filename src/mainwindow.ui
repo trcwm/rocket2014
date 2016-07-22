@@ -41,7 +41,16 @@
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="menuSystem">
+    <property name="title">
+     <string>System</string>
+    </property>
+    <addaction name="actionReset"/>
+    <addaction name="actionHalt"/>
+    <addaction name="actionResume"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuSystem"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoad_ROM">
@@ -52,6 +61,21 @@
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="text">
+    <string>Reset</string>
+   </property>
+  </action>
+  <action name="actionHalt">
+   <property name="text">
+    <string>Halt</string>
+   </property>
+  </action>
+  <action name="actionResume">
+   <property name="text">
+    <string>Resume</string>
    </property>
   </action>
  </widget>

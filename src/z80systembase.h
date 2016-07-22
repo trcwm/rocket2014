@@ -20,9 +20,10 @@
 #include <QObject>
 #include <QThread>
 #include <QMutex>
+#include "disasmmodel.h"
 #include "consoleview.h"
 
-class Z80SystemBase
+class Z80SystemBase : public DisasmModel
 {
 public:
     explicit Z80SystemBase(ConsoleView *console);
@@ -35,10 +36,7 @@ public:
     enum reg_t {REG_A, REG_B, REG_C, REG_D, REG_E, REG_H, REG_L, REG_IX, REG_IY, REG_SP, REG_PC, REG_HL, REG_DE, REG_BC};
 
     /** get a register value */
-    virtual uint16_t getRegister(reg_t regID) const = 0;
-
-    /** get disassembly */
-    virtual bool getDisassembly(char *txtBufferPtr, size_t txtBufferSize, uint16_t address, uint32_t instructions) = 0;
+    virtual uint16_t getRegister(reg_t regID) = 0;
 
     virtual void execute(uint32_t instructions) = 0;
     virtual void interrupt() = 0;

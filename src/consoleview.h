@@ -1,7 +1,7 @@
 /*
 
     Console view based on QImage
-    N.A. Moseley 2016
+    N.A. Moseley, T.J. Hofmeijer 2016
 
     License: GPLv2.
 

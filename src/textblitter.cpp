@@ -1,3 +1,12 @@
+/*
+
+    Textblitter
+    T.J. Hofmeijer 2016
+
+    License: GPLv2.
+
+*/
+
 #include "textblitter.h"
 #include <stdarg.h>
 

@@ -7,6 +7,7 @@
 #include "z80systemthread.h"
 #include "consoleview.h"
 #include "registerwindow.h"
+#include "disasmview.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,12 +28,14 @@ public slots:
 private slots:
     void on_actionLoad_ROM_triggered();
 
+    void on_actionReset_triggered();
+
 private:
     Ui::MainWindow  *ui;
     ConsoleView     *m_console;
     RegisterView    *m_registerView;
+    DisasmView      *m_disasmView;
     Z80SystemThread *m_sys;
-    QTextEdit       *m_disasm;
 
     QTimer          *m_debugTimer;
 };

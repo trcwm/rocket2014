@@ -37,16 +37,21 @@ public:
     void reset();
 
     /** get Z80 register value */
-    uint16_t getRegister(Z80SystemBase::reg_t regID) const;
+    uint16_t getRegister(Z80SystemBase::reg_t regID);
 
-    /** get disassembly text */
-    bool getDisassembly(char *txtBuffer, size_t txtBufferSize, uint16_t address, uint32_t instructions);
+    /** get full access to the Z80 subsystem */
+    Z80SystemBase* getSystemPtr()
+    {
+        return m_z80;
+    }
 
 protected:
     virtual void run();
 
     std::queue<uint8_t> m_rxFIFO;
-    QMutex          m_queueMutex;
+    QMutex          m_queueMutex;   // serial data mutex
+
+    QMutex          m_dbgMutex;     // debug/reset mutex
     bool            m_quit;
     Z80SystemBase   *m_z80;
 };

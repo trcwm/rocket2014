@@ -1,6 +1,6 @@
 
+#include <QMutexLocker>
 #include "z80system_z80ex.h"
-
 
 Z80System_Z80ex::Z80System_Z80ex(ConsoleView *console)
     : Z80SystemBase(console)
@@ -29,7 +29,7 @@ void Z80System_Z80ex::interrupt()
     z80ex_int(m_context);
 }
 
-uint16_t Z80System_Z80ex::getRegister(Z80SystemBase::reg_t regID) const
+uint16_t Z80System_Z80ex::getRegister(Z80SystemBase::reg_t regID)
 {
     if (m_context == 0) return 0;
 
@@ -68,29 +68,16 @@ uint16_t Z80System_Z80ex::getRegister(Z80SystemBase::reg_t regID) const
     }
 }
 
-bool Z80System_Z80ex::getDisassembly(char *txtBufferPtr, size_t txtBufferSize, uint16_t address, uint32_t instructions)
+uint32_t Z80System_Z80ex::getDisassembly(uint16_t address, QString &txt)
 {
+    char buffer[100];
+    int dummy1, dummy2;
+
     if (m_context == 0) return false;
 
-    int dummy1, dummy2;
-    while((txtBufferSize > 0) && (instructions > 0))
-    {
-        uint16_t instrLen = z80ex_dasm(txtBufferPtr, txtBufferSize, 0, &dummy1, &dummy2, ex_readMemory, address, this);
-        size_t txtLen = strlen(txtBufferPtr);
-        txtBufferSize -= txtLen;
-        txtBufferPtr += txtLen;
-        if (txtBufferSize > 2)
-        {
-            txtBufferPtr[0] = 10;
-            txtBufferPtr[1] = 0;
-            txtBufferPtr++;
-            txtBufferSize--;
-        }
-        address += instrLen;
-        instructions--;
-    }
-
-    return true;
+    uint32_t instrLen = z80ex_dasm(buffer, sizeof(buffer), 0, &dummy1, &dummy2, ex_readMemory, address, this);
+    txt = QString(buffer);
+    return instrLen;
 }
 
 void Z80System_Z80ex::execute(uint32_t instructions)

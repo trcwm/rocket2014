@@ -37,6 +37,8 @@ bool Z80SystemBase::loadROM(const char *filename)
     fread(m_ROM, 1, bytes, fin);
     fclose(fin);
 
+    reset();
+
     return true;
 }
 

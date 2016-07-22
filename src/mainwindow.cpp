@@ -17,8 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_registerView = new RegisterView(this);
     ui->debugLayout->addWidget(m_registerView);
 
-    m_disasm = new QTextEdit(this);
-    ui->debugLayout->addWidget(m_disasm);
+    m_disasmView = new DisasmView(this);
+    ui->debugLayout->addWidget(m_disasmView);
 
     // setup Z80 system and connect
     // the signals and slots
@@ -34,12 +34,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_debugTimer, SIGNAL(timeout()), this, SLOT(onDebugTimer()));
     m_debugTimer->start(500);
 
-    QFont disasmFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    QFontMetrics disasmFontMetrics(disasmFont);
-    m_disasm->setFont(disasmFont);
-    m_disasm->setMinimumWidth(disasmFontMetrics.width("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"));
-    //m_disasm->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::ExpandFlag);
-    m_disasm->updateGeometry();
+    m_disasmView->setModel(m_sys->getSystemPtr());
+
 }
 
 MainWindow::~MainWindow()
@@ -97,6 +93,8 @@ void MainWindow::onDebugTimer()
     if (m_sys == 0)
         return;
 
+    uint16_t address = m_sys->getRegister(Z80SystemBase::REG_PC);
+
     m_registerView->setRegisterValue(0, m_sys->getRegister(Z80SystemBase::REG_A));
     m_registerView->setRegisterValue(1, m_sys->getRegister(Z80SystemBase::REG_B));
     m_registerView->setRegisterValue(2, m_sys->getRegister(Z80SystemBase::REG_C));
@@ -110,15 +108,10 @@ void MainWindow::onDebugTimer()
     m_registerView->setRegisterValue(10, m_sys->getRegister(Z80SystemBase::REG_IX));
     m_registerView->setRegisterValue(11, m_sys->getRegister(Z80SystemBase::REG_IY));
     m_registerView->setRegisterValue(12, m_sys->getRegister(Z80SystemBase::REG_SP));
-    m_registerView->setRegisterValue(13, m_sys->getRegister(Z80SystemBase::REG_PC));
+    m_registerView->setRegisterValue(13, address);
     m_registerView->update();
 
-    char buffer[1024];
-    m_sys->getDisassembly(buffer, sizeof(buffer), m_sys->getRegister(Z80SystemBase::REG_PC), 10);
-    if (m_disasm != 0)
-    {
-        m_disasm->setText(buffer);
-    }
+    m_disasmView->setViewParameters(address, address, 20);
 }
 
 void MainWindow::on_actionLoad_ROM_triggered()
@@ -133,3 +126,8 @@ void MainWindow::on_actionLoad_ROM_triggered()
     }
 }
 
+
+void MainWindow::on_actionReset_triggered()
+{
+    m_sys->reset();
+}

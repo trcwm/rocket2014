@@ -1,3 +1,12 @@
+/*
+
+    Textblitter
+    T.J. Hofmeijer 2016
+
+    License: GPLv2.
+
+*/
+
 #ifndef TEXTBLITTER_H
 #define TEXTBLITTER_H
 
