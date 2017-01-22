@@ -8,6 +8,7 @@
 */
 
 #include <stdio.h>
+#include <QDebug>
 #include <QMutexLocker>
 #include "z80systembase.h"
 
@@ -112,6 +113,7 @@ void Z80SystemBase::writeIO(uint16_t address, uint8_t data)
     {
     case 0x80:  // 68B50 control register
         m_MC6850_ctrl = data;
+        //qDebug() << "68B50 write " << data;
         return;
     case 0x81:  // 68B50 TX data register
         if (m_console != 0)

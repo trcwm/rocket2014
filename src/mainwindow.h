@@ -30,6 +30,8 @@ private slots:
 
     void on_actionReset_triggered();
 
+    void on_actionQuit_triggered();
+
 private:
     Ui::MainWindow  *ui;
     ConsoleView     *m_console;

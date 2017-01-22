@@ -131,3 +131,8 @@ void MainWindow::on_actionReset_triggered()
 {
     m_sys->reset();
 }
+
+void MainWindow::on_actionQuit_triggered()
+{
+    close();
+}

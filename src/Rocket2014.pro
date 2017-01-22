@@ -32,11 +32,9 @@ SOURCES += main.cpp\
         registerwindow.cpp \
         z80systemthread.cpp \
         z80systembase.cpp \
-        z80system_libz80.cpp \
         z80system_z80ex.cpp \
         ../contrib/z80ex-1.1.19/z80ex.c \
-        ../contrib/z80ex-1.1.19/z80ex_dasm.c \
-        ../contrib/libz80/z80.c
+        ../contrib/z80ex-1.1.19/z80ex_dasm.c
 
 HEADERS  += mainwindow.h \
             z80systembase.h \
@@ -46,11 +44,9 @@ HEADERS  += mainwindow.h \
             disasmview.h \
             registerwindow.h \
             z80systemthread.h \
-            z80system_libz80.h \
             z80system_z80ex.h \
             ../contrib/z80ex-1.1.19/include/z80ex.h \
-            ../contrib/z80ex-1.1.19/include/z80ex_dasm.h \
-            ../contrib/libz80/z80.h
+            ../contrib/z80ex-1.1.19/include/z80ex_dasm.h
 
 FORMS    += mainwindow.ui
 

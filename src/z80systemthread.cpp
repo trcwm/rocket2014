@@ -17,11 +17,7 @@
 Z80SystemThread::Z80SystemThread(ConsoleView *console, QObject *parent) :
     QThread(parent), m_quit(false)
 {
-#if 0
-    m_z80 = new Z80System_libZ80(console);
-#else
     m_z80 = new Z80System_Z80ex(console);
-#endif
 }
 
 /** load a file into the ROM */
