@@ -43,7 +43,7 @@ int TextBlitter::lineSpacing() const
 
 /*! \brief Writes text with color attributes to a QImage
   */
-int TextBlitter::writeText (QImage &target, int x, int y, ColorChar *str, int length)
+int TextBlitter::writeText (QImage &target, int x, int y, ColorChar *str, int length, int cursorpos)
 {
     int l = std::min(length, (target.width () - x) / 8);
 
@@ -58,8 +58,17 @@ int TextBlitter::writeText (QImage &target, int x, int y, ColorChar *str, int le
         {
             if ((str[j].m_flags & m_dirtyFlag) != 0)
             {
-                QRgb fore = m_palette[str[j].m_foreground];
-                QRgb back = m_palette[str[j].m_background];
+                QRgb fore,back;
+                if (j == cursorpos)
+                {
+                    back = m_palette[str[j].m_foreground];
+                    fore = m_palette[str[j].m_background];
+                }
+                else
+                {
+                    fore = m_palette[str[j].m_foreground];
+                    back = m_palette[str[j].m_background];
+                }
 
                 uint8_t bitmap = g_fontData[(unsigned int)(str[j].m_char) * FONT_HEIGHT + i + 8];
 

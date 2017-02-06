@@ -38,7 +38,7 @@ public:
             {}
     };
 
-    int writeText(QImage &target, int x, int y, ColorChar* str, int length);
+    int writeText(QImage &target, int x, int y, ColorChar* str, int length, int cursorpos);
 
     int lineSpacing() const;
 

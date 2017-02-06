@@ -19,18 +19,29 @@
 #include <vector>
 #include "textblitter.h"
 
+/** Console view with multi-threading support.
+    A timer is used to refresh the console display.
+
+    The console supports backspace, linefeed,
+    clear screen/form feed, carriage return.
+
+*/
 class ConsoleView : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ConsoleView(QWidget *parent = 0);
+    explicit ConsoleView(QWidget *parent = 0, uint32_t rows = 50, uint32_t columns = 80);
     ~ConsoleView();
 
+    /** submit a character to the console.
+        this function is multi-threading safe. */
     void submitByte(uint8_t c);
-    void scrollUp();
 
 protected:
+    /** scroll the display up */
+    void scrollUp();
+
     virtual void paintEvent(QPaintEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
 

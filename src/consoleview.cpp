@@ -11,12 +11,12 @@
 #include <QPainter>
 #include "consoleview.h"
 
-ConsoleView::ConsoleView(QWidget *parent)
+ConsoleView::ConsoleView(QWidget *parent, uint32_t rows, uint32_t columns)
     : QWidget(parent)
     , m_image(0)
     , m_textBlitter(new TextBlitter())
-    , m_lineCount(50)
-    , m_colCount(80)
+    , m_lineCount(rows)
+    , m_colCount(columns)
     , m_bgcolor(0)
     , cx(0)
     , cy(0)
@@ -103,7 +103,17 @@ void ConsoleView::redraw()
     for(uint32_t y=0; y<visibleRows; y++)
     {
         TextBlitter::ColorChar* line = &m_framebuffer[m_colCount*y];
-        m_textBlitter->writeText(*m_image, 0, y*lineSpacing, line, visibleChars);
+        if (y == cy)
+        {
+            // cursor is on this row!
+            m_framebuffer[m_colCount*y+cx].m_flags |= TextBlitter::m_dirtyFlag;
+            m_textBlitter->writeText(*m_image, 0, y*lineSpacing, line, visibleChars, cx);
+        }
+        else
+        {
+            // normal row
+            m_textBlitter->writeText(*m_image, 0, y*lineSpacing, line, visibleChars, -1);
+        }
     }
     update();
 }
