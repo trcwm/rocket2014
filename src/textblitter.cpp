@@ -22,6 +22,7 @@
 
 TextBlitter::TextBlitter()
 {
+    m_doubleSize = false;
     //preprocess the font data
     for (int i = 0; i < 256; i++)
     {
@@ -45,7 +46,15 @@ int TextBlitter::lineSpacing() const
   */
 int TextBlitter::writeText (QImage &target, int x, int y, ColorChar *str, int length, int cursorpos)
 {
-    int l = std::min(length, (target.width () - x) / 8);
+    int l;
+    if (m_doubleSize)
+    {
+        l= std::min(length, (target.width () - x) / 16);
+    }
+    else
+    {
+        l= std::min(length, (target.width () - x) / 8);
+    }
 
     for (int i = 0; i < FONT_HEIGHT; i++)
     {
@@ -72,16 +81,32 @@ int TextBlitter::writeText (QImage &target, int x, int y, ColorChar *str, int le
 
                 uint8_t bitmap = g_fontData[(unsigned int)(str[j].m_char) * FONT_HEIGHT + i + 8];
 
-                pixels[o + 0] = (bitmap & 0x80) ? fore : back;
-                pixels[o + 1] = (bitmap & 0x40) ? fore : back;
-                pixels[o + 2] = (bitmap & 0x20) ? fore : back;
-                pixels[o + 3] = (bitmap & 0x10) ? fore : back;
-                pixels[o + 4] = (bitmap & 0x08) ? fore : back;
-                pixels[o + 5] = (bitmap & 0x04) ? fore : back;
-                pixels[o + 6] = (bitmap & 0x02) ? fore : back;
-                pixels[o + 7] = (bitmap & 0x01) ? fore : back;
+                if (m_doubleSize)
+                {
+                    for(uint32_t p=0; p<8; p++)
+                    {
+                        pixels[o+2*p]   = bitmap & 0x80 ? fore : back;
+                        pixels[o+2*p+1] = bitmap & 0x80 ? fore : back;
+                        bitmap <<= 1;
+                    }
+                }
+                else
+                {
+                    for(uint32_t p=0; p<8; p++)
+                    {
+                        pixels[o+p]   = bitmap & 0x80 ? fore : back;
+                        bitmap <<= 1;
+                    }
+                }
             }
-            o += 8;
+            if (m_doubleSize)
+            {
+                o += 16;
+            }
+            else
+            {
+                o += 8;
+            }
         }
     }
 

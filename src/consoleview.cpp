@@ -153,6 +153,8 @@ void ConsoleView::onRefreshTimer()
         case 8:     // backspace
             if (cx > 0)
             {
+                // mark old cursor position as dirty
+                m_framebuffer[cx+cy*m_colCount].m_flags |= TextBlitter::m_dirtyFlag;
                 cx--;
                 cc.m_background = m_bgPalIdx;
                 cc.m_foreground = m_fgPalIdx;
@@ -162,6 +164,8 @@ void ConsoleView::onRefreshTimer()
             }
             break;
         case 10:    // line feed
+            // mark old cursor position as dirty
+            m_framebuffer[cx+cy*m_colCount].m_flags |= TextBlitter::m_dirtyFlag;
             cy++;
             if (cy >= m_lineCount)
             {
@@ -179,6 +183,9 @@ void ConsoleView::onRefreshTimer()
             cy = 0;
             break;
         case 13:    // carriage return
+            // mark old cursor position as dirty
+            m_framebuffer[cx+cy*m_colCount].m_flags |= TextBlitter::m_dirtyFlag;
+            // set cursor to beginning of line
             cx = 0;
             break;
         default:
