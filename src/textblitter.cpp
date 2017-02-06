@@ -23,6 +23,7 @@
 TextBlitter::TextBlitter()
 {
     m_doubleSize = false;
+
     //preprocess the font data
     for (int i = 0; i < 256; i++)
     {

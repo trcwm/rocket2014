@@ -21,7 +21,6 @@ DEFINES += "Z80EX_VERSION_MAJOR=1"
 DEFINES += "Z80EX_VERSION_MINOR=19"
 DEFINES += "Z80EX_RELEASE_TYPE=custom"
 
-INCLUDEPATH += ../contrib/libz80
 INCLUDEPATH += ../contrib/z80ex-1.1.19/include
 
 SOURCES += main.cpp\
