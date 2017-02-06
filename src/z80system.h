@@ -39,6 +39,7 @@ public:
     virtual void reset()
     {
         m_MC6850_stat = MC6850_TXDATAEMPTY;
+        Z80CPUBase::reset();
     }
 
 protected:

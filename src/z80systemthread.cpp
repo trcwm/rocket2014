@@ -13,9 +13,10 @@
 #include "z80system.h"
 
 Z80SystemThread::Z80SystemThread(ConsoleView *console, QObject *parent) :
-    QThread(parent), m_quit(false)
+    QThread(parent), m_quit(false), m_running(true)
 {
     m_z80System = new Z80System(console);
+    reset();
 }
 
 /** load a file into the ROM */
@@ -32,7 +33,7 @@ void Z80SystemThread::reset()
 {
     if (m_z80System != 0)
     {
-        QMutexLocker locker(&m_dbgMutex);
+        QMutexLocker locker(&m_ctrlMutex);
         m_z80System->reset();
     }
 }
@@ -61,10 +62,22 @@ void Z80SystemThread::run()
         }
         m_queueMutex.unlock();
 
-        m_dbgMutex.lock();
-        m_z80System->execute(10000);
-        m_dbgMutex.unlock();
+        if (m_running)
+        {
+            m_ctrlMutex.lock();
+            m_z80System->execute(10000);
+            m_ctrlMutex.unlock();
+        }
     }
+}
+
+void Z80SystemThread::setCPUState(bool running)
+{
+    // we must protect the queue using
+    // a mutex because this function
+    // is called from the GUI thread
+    QMutexLocker locker(&m_queueMutex);
+    m_running = running;
 }
 
 void Z80SystemThread::putSerialData(uint8_t c)
@@ -78,7 +91,7 @@ void Z80SystemThread::putSerialData(uint8_t c)
 
 uint16_t Z80SystemThread::getRegister(Z80System::reg_t regID)
 {
-    QMutexLocker locker(&m_dbgMutex);
+    QMutexLocker locker(&m_ctrlMutex);
     return m_z80System->getRegister(regID);
 }
 

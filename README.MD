@@ -1,6 +1,8 @@
 # Rocket2014
-## A simulator for the RC2014 Z80-based computer
+## A cross-platform simulator for the RC2014 Z80-based computer
 
-Written in C++/Qt5.5
+The simulator has a classic green console/display, shows the Z80 registers and disassembly in real time, while a program is running.
 
-It currently simulates RC2014's Basic correctly, shows the Z80 registers and disassembly in real time.
+It is written in C++/Qt5.5
+
+![screenshot](screenshot.png "A screenshot of the simulator")

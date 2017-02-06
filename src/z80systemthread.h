@@ -36,6 +36,9 @@ public:
     /** reset the system */
     void reset();
 
+    /** control running of CPU */
+    void setCPUState(bool running);
+
     /** get Z80 register value */
     uint16_t getRegister(Z80System::reg_t regID);
 
@@ -51,7 +54,8 @@ protected:
     std::queue<uint8_t> m_rxFIFO;
     QMutex          m_queueMutex;   // serial data mutex
 
-    QMutex          m_dbgMutex;     // debug/reset mutex
+    QMutex          m_ctrlMutex;     // debug/reset/control mutex
+    bool            m_running;
     bool            m_quit;
     Z80System       *m_z80System;
 };

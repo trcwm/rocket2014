@@ -2,6 +2,7 @@
 #include <QFileDialog>
 #include <QClipboard>
 #include <QFontDatabase>
+#include <QSettings>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -20,13 +21,15 @@ MainWindow::MainWindow(QWidget *parent) :
     m_disasmView = new DisasmView(this);
     ui->debugLayout->addWidget(m_disasmView);
 
+    // setup the status bar
+    m_filenameLabel = new QLabel();
+    m_runStateLabel = new QLabel();
+    ui->statusBar->addPermanentWidget(m_runStateLabel, 1);
+    ui->statusBar->addPermanentWidget(m_filenameLabel, 4);
+
     // setup Z80 system and connect
     // the signals and slots
     m_sys = new Z80SystemThread(m_console, this);
-    if (!m_sys->loadROM("basic32.rom"))
-    {
-        qDebug() << "Loading of ROM failed!";
-    }
 
     m_sys->start();    
 
@@ -36,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_disasmView->setModel(m_sys->getSystemPtr());
 
+    setRunState(true);  // updates m_runStateLabel
 }
 
 MainWindow::~MainWindow()
@@ -88,6 +92,23 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
 }
 
+/** set CPU to run or halt */
+void MainWindow::setRunState(bool state)
+{
+    if (m_sys != 0)
+    {
+        m_sys->setCPUState(state);
+    }
+    if (state = true)
+    {
+        m_runStateLabel->setText("System: Running");
+    }
+    else
+    {
+        m_runStateLabel->setText("System: Halted");
+    }
+}
+
 void MainWindow::onDebugTimer()
 {
     if (m_sys == 0)
@@ -116,13 +137,26 @@ void MainWindow::onDebugTimer()
 
 void MainWindow::on_actionLoad_ROM_triggered()
 {
+    // load previous ROM loading location from a persitent storage
+    // using QSettings class
+
+    QSettings settings;
+
+    QString loadPath = settings.value("paths/prevromlocation","").toString();
+
     QString romfile = QFileDialog::getOpenFileName(this,
-         tr("Open ROM file"), "", tr("ROM Files (*.bin *.rom)"));
+         tr("Open ROM file"), loadPath, tr("ROM Files (*.bin *.rom)"));
 
     if (!romfile.isEmpty())
     {
         m_sys->loadROM(romfile.toStdString().c_str());
         m_sys->reset();
+        m_filenameLabel->setText("Loaded: " + romfile);
+
+        // set the prevromlocation to the location we
+        // loaded this ROM from
+        QFileInfo info(romfile);
+        settings.setValue("paths/prevromlocation", info.path());
     }
 }
 
@@ -135,4 +169,15 @@ void MainWindow::on_actionReset_triggered()
 void MainWindow::on_actionQuit_triggered()
 {
     close();
+}
+
+void MainWindow::on_actionHalt_triggered()
+{
+    setRunState(false);
+}
+
+
+void MainWindow::on_actionResume_triggered()
+{
+    setRunState(true);
 }
