@@ -20,38 +20,33 @@
 #include <QObject>
 #include <QThread>
 #include <QMutex>
-#include "disasmmodel.h"
+#include "z80cpubase.h"
 #include "consoleview.h"
 
-class Z80SystemBase : public DisasmModel
+class Z80System : public Z80CPUBase
 {
 public:
-    explicit Z80SystemBase(ConsoleView *console);
+    explicit Z80System(ConsoleView *console);
 
-    bool putSerialData(uint8_t c);  // called from GUI thread to
+    /** call this function to simulate serial data coming
+        a device connected to the Z80System */
+    bool putSerialData(uint8_t c);
 
     /** load a file into the ROM */
     bool loadROM(const char *filename);
 
-    enum reg_t {REG_A, REG_B, REG_C, REG_D, REG_E, REG_H, REG_L, REG_IX, REG_IY, REG_SP, REG_PC, REG_HL, REG_DE, REG_BC};
-
-    /** get a register value */
-    virtual uint16_t getRegister(reg_t regID) = 0;
-
-    virtual void execute(uint32_t instructions) = 0;
-    virtual void interrupt() = 0;
+    /** reset our custom hardware */
     virtual void reset()
     {
         m_MC6850_stat = MC6850_TXDATAEMPTY;
     }
 
 protected:
-    uint8_t readMemory(uint16_t address);
-    uint16_t readMemory16(uint16_t address);
-
-    void    writeMemory(uint16_t address, uint8_t data);
-    uint8_t readIO(uint16_t address);
-    void    writeIO(uint16_t address, uint8_t data);
+    virtual uint8_t readMemory(uint16_t address) override;
+    virtual uint16_t readMemory16(uint16_t address) override;
+    virtual void    writeMemory(uint16_t address, uint8_t data) override;
+    virtual uint8_t readIO(uint16_t address) override;
+    virtual void    writeIO(uint16_t address, uint8_t data) override;
 
     // memories
     uint8_t     m_ROM[65536];

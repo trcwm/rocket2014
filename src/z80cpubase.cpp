@@ -1,9 +1,8 @@
 
 #include <QMutexLocker>
-#include "z80system_z80ex.h"
+#include "z80cpubase.h"
 
-Z80System_Z80ex::Z80System_Z80ex(ConsoleView *console)
-    : Z80SystemBase(console)
+Z80CPUBase::Z80CPUBase()
 {
     m_context = z80ex_create(
                 ex_readMemory, this,
@@ -14,61 +13,60 @@ Z80System_Z80ex::Z80System_Z80ex(ConsoleView *console)
                 );
 }
 
-void Z80System_Z80ex::reset()
+void Z80CPUBase::reset()
 {
     if (m_context == 0) return;
 
     z80ex_reset(m_context);
-    Z80SystemBase::reset();
 }
 
-void Z80System_Z80ex::interrupt()
+void Z80CPUBase::interrupt()
 {
     if (m_context == 0) return;
 
     z80ex_int(m_context);
 }
 
-uint16_t Z80System_Z80ex::getRegister(Z80SystemBase::reg_t regID)
+uint16_t Z80CPUBase::getRegister(const reg_t regID)
 {
     if (m_context == 0) return 0;
 
     switch(regID)
     {
-    case Z80SystemBase::REG_A:
+    case REG_A:
         return z80ex_get_reg(m_context, regAF) >> 8;
-    case Z80SystemBase::REG_B:
+    case REG_B:
         return z80ex_get_reg(m_context, regBC) >> 8;
-    case Z80SystemBase::REG_C:
+    case REG_C:
         return z80ex_get_reg(m_context, regBC) & 0xFF;
-    case Z80SystemBase::REG_D:
+    case REG_D:
         return z80ex_get_reg(m_context, regDE) >> 8;
-    case Z80SystemBase::REG_E:
+    case REG_E:
         return z80ex_get_reg(m_context, regDE) & 0xFF;
-    case Z80SystemBase::REG_H:
+    case REG_H:
         return z80ex_get_reg(m_context, regHL) >> 8;
-    case Z80SystemBase::REG_L:
+    case REG_L:
         return z80ex_get_reg(m_context, regHL) & 0xFF;
-    case Z80SystemBase::REG_IX:
+    case REG_IX:
         return z80ex_get_reg(m_context, regBC);
-    case Z80SystemBase::REG_IY:
+    case REG_IY:
         return z80ex_get_reg(m_context, regDE);
-    case Z80SystemBase::REG_BC:
+    case REG_BC:
         return z80ex_get_reg(m_context, regBC);
-    case Z80SystemBase::REG_DE:
+    case REG_DE:
         return z80ex_get_reg(m_context, regDE);
-    case Z80SystemBase::REG_HL:
+    case REG_HL:
         return z80ex_get_reg(m_context, regHL);
-    case Z80SystemBase::REG_SP:
+    case REG_SP:
         return z80ex_get_reg(m_context, regSP);
-    case Z80SystemBase::REG_PC:
+    case REG_PC:
         return z80ex_get_reg(m_context, regPC);
     default:
         return 0;
     }
 }
 
-uint32_t Z80System_Z80ex::getDisassembly(uint16_t address, QString &txt)
+uint32_t Z80CPUBase::getDisassembly(uint16_t address, QString &txt)
 {
     char buffer[100];
     int dummy1, dummy2;
@@ -80,7 +78,7 @@ uint32_t Z80System_Z80ex::getDisassembly(uint16_t address, QString &txt)
     return instrLen;
 }
 
-void Z80System_Z80ex::execute(uint32_t instructions)
+void Z80CPUBase::execute(uint32_t instructions)
 {
     if (m_context == 0) return;
 
@@ -88,56 +86,56 @@ void Z80System_Z80ex::execute(uint32_t instructions)
         z80ex_step(m_context);
 }
 
-uint8_t Z80System_Z80ex::ex_readMemory(Z80EX_CONTEXT *ctx, uint16_t address, int m1_state, void *userdata)
+uint8_t Z80CPUBase::ex_readMemory(Z80EX_CONTEXT *ctx, uint16_t address, int m1_state, void *userdata)
 {
     if (userdata != 0)
     {
-        Z80System_Z80ex *obj = (Z80System_Z80ex*)userdata;
+        Z80CPUBase *obj = (Z80CPUBase*)userdata;
         return obj->readMemory(address);
     }
     return 0;
 }
 
-uint8_t Z80System_Z80ex::ex_readMemory(uint16_t address, void *userdata)
+uint8_t Z80CPUBase::ex_readMemory(uint16_t address, void *userdata)
 {
     if (userdata != 0)
     {
-        Z80System_Z80ex *obj = (Z80System_Z80ex*)userdata;
+        Z80CPUBase *obj = (Z80CPUBase*)userdata;
         return obj->readMemory(address);
     }
     return 0;
 }
 
 
-uint8_t Z80System_Z80ex::ex_readIO(Z80EX_CONTEXT *ctx, uint16_t address, void *userdata)
+uint8_t Z80CPUBase::ex_readIO(Z80EX_CONTEXT *ctx, uint16_t address, void *userdata)
 {
     if (userdata != 0)
     {
-        Z80System_Z80ex *obj = (Z80System_Z80ex*)userdata;
+        Z80CPUBase *obj = (Z80CPUBase*)userdata;
         return obj->readIO(address);
     }
     return 0;
 }
 
-void Z80System_Z80ex::ex_writeMemory(Z80EX_CONTEXT *ctx, uint16_t address, uint8_t data, void *userdata)
+void Z80CPUBase::ex_writeMemory(Z80EX_CONTEXT *ctx, uint16_t address, uint8_t data, void *userdata)
 {
     if (userdata != 0)
     {
-        Z80System_Z80ex *obj = (Z80System_Z80ex*)userdata;
+        Z80CPUBase *obj = (Z80CPUBase*)userdata;
         obj->writeMemory(address, data);
     }
 }
 
-void Z80System_Z80ex::ex_writeIO(Z80EX_CONTEXT *ctx, uint16_t address, uint8_t data, void *userdata)
+void Z80CPUBase::ex_writeIO(Z80EX_CONTEXT *ctx, uint16_t address, uint8_t data, void *userdata)
 {
     if (userdata != 0)
     {
-        Z80System_Z80ex *obj = (Z80System_Z80ex*)userdata;
+        Z80CPUBase *obj = (Z80CPUBase*)userdata;
         obj->writeIO(address, data);
     }
 }
 
-uint8_t Z80System_Z80ex::ex_int(Z80EX_CONTEXT *ctx, void *userdata)
+uint8_t Z80CPUBase::ex_int(Z80EX_CONTEXT *ctx, void *userdata)
 {
     return 0;
 }

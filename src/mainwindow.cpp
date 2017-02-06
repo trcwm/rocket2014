@@ -93,21 +93,21 @@ void MainWindow::onDebugTimer()
     if (m_sys == 0)
         return;
 
-    uint16_t address = m_sys->getRegister(Z80SystemBase::REG_PC);
+    uint16_t address = m_sys->getRegister(Z80System::REG_PC);
 
-    m_registerView->setRegisterValue(0, m_sys->getRegister(Z80SystemBase::REG_A));
-    m_registerView->setRegisterValue(1, m_sys->getRegister(Z80SystemBase::REG_B));
-    m_registerView->setRegisterValue(2, m_sys->getRegister(Z80SystemBase::REG_C));
-    m_registerView->setRegisterValue(3, m_sys->getRegister(Z80SystemBase::REG_D));
-    m_registerView->setRegisterValue(4, m_sys->getRegister(Z80SystemBase::REG_E));
-    m_registerView->setRegisterValue(5, m_sys->getRegister(Z80SystemBase::REG_H));
-    m_registerView->setRegisterValue(6, m_sys->getRegister(Z80SystemBase::REG_L));
-    m_registerView->setRegisterValue(7, m_sys->getRegister(Z80SystemBase::REG_BC));
-    m_registerView->setRegisterValue(8, m_sys->getRegister(Z80SystemBase::REG_DE));
-    m_registerView->setRegisterValue(9, m_sys->getRegister(Z80SystemBase::REG_HL));
-    m_registerView->setRegisterValue(10, m_sys->getRegister(Z80SystemBase::REG_IX));
-    m_registerView->setRegisterValue(11, m_sys->getRegister(Z80SystemBase::REG_IY));
-    m_registerView->setRegisterValue(12, m_sys->getRegister(Z80SystemBase::REG_SP));
+    m_registerView->setRegisterValue(0, m_sys->getRegister(Z80System::REG_A));
+    m_registerView->setRegisterValue(1, m_sys->getRegister(Z80System::REG_B));
+    m_registerView->setRegisterValue(2, m_sys->getRegister(Z80System::REG_C));
+    m_registerView->setRegisterValue(3, m_sys->getRegister(Z80System::REG_D));
+    m_registerView->setRegisterValue(4, m_sys->getRegister(Z80System::REG_E));
+    m_registerView->setRegisterValue(5, m_sys->getRegister(Z80System::REG_H));
+    m_registerView->setRegisterValue(6, m_sys->getRegister(Z80System::REG_L));
+    m_registerView->setRegisterValue(7, m_sys->getRegister(Z80System::REG_BC));
+    m_registerView->setRegisterValue(8, m_sys->getRegister(Z80System::REG_DE));
+    m_registerView->setRegisterValue(9, m_sys->getRegister(Z80System::REG_HL));
+    m_registerView->setRegisterValue(10, m_sys->getRegister(Z80System::REG_IX));
+    m_registerView->setRegisterValue(11, m_sys->getRegister(Z80System::REG_IY));
+    m_registerView->setRegisterValue(12, m_sys->getRegister(Z80System::REG_SP));
     m_registerView->setRegisterValue(13, address);
     m_registerView->update();
 

@@ -10,32 +10,30 @@
 #include <stdio.h>
 #include <QMutexLocker>
 #include "z80systemthread.h"
-
-#include "z80system_libz80.h"
-#include "z80system_z80ex.h"
+#include "z80system.h"
 
 Z80SystemThread::Z80SystemThread(ConsoleView *console, QObject *parent) :
     QThread(parent), m_quit(false)
 {
-    m_z80 = new Z80System_Z80ex(console);
+    m_z80System = new Z80System(console);
 }
 
 /** load a file into the ROM */
 bool Z80SystemThread::loadROM(const char *filename)
 {
-    if (m_z80 != 0)
+    if (m_z80System != 0)
     {
-        return m_z80->loadROM(filename);
+        return m_z80System->loadROM(filename);
     }
     return false;
 }
 
 void Z80SystemThread::reset()
 {
-    if (m_z80 != 0)
+    if (m_z80System != 0)
     {
         QMutexLocker locker(&m_dbgMutex);
-        m_z80->reset();
+        m_z80System->reset();
     }
 }
 
@@ -43,12 +41,12 @@ void Z80SystemThread::run()
 {
     m_quit = false;
 
-    if (m_z80 == 0)
+    if (m_z80System == 0)
     {
         return;
     }
 
-    m_z80->reset();
+    m_z80System->reset();
 
     while (!m_quit)
     {
@@ -56,7 +54,7 @@ void Z80SystemThread::run()
         m_queueMutex.lock();
         if (m_rxFIFO.size() != 0)
         {
-            if (m_z80->putSerialData(m_rxFIFO.front()))
+            if (m_z80System->putSerialData(m_rxFIFO.front()))
             {
                 m_rxFIFO.pop();
             }
@@ -64,7 +62,7 @@ void Z80SystemThread::run()
         m_queueMutex.unlock();
 
         m_dbgMutex.lock();
-        m_z80->execute(10000);
+        m_z80System->execute(10000);
         m_dbgMutex.unlock();
     }
 }
@@ -78,9 +76,9 @@ void Z80SystemThread::putSerialData(uint8_t c)
     m_rxFIFO.push(c);
 }
 
-uint16_t Z80SystemThread::getRegister(Z80SystemBase::reg_t regID)
+uint16_t Z80SystemThread::getRegister(Z80System::reg_t regID)
 {
     QMutexLocker locker(&m_dbgMutex);
-    return m_z80->getRegister(regID);
+    return m_z80System->getRegister(regID);
 }
 

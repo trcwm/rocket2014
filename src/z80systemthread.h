@@ -16,8 +16,8 @@
 #include <QThread>
 #include <QMutex>
 #include "consoleview.h"
-#include "Z80SystemBase.h"
-#include "Z80SystemThread.h"
+#include "z80system.h"
+#include "z80systemthread.h"
 
 class Z80SystemThread : public QThread
 {
@@ -37,12 +37,12 @@ public:
     void reset();
 
     /** get Z80 register value */
-    uint16_t getRegister(Z80SystemBase::reg_t regID);
+    uint16_t getRegister(Z80System::reg_t regID);
 
     /** get full access to the Z80 subsystem */
-    Z80SystemBase* getSystemPtr()
+    Z80System* getSystemPtr()
     {
-        return m_z80;
+        return m_z80System;
     }
 
 protected:
@@ -53,7 +53,7 @@ protected:
 
     QMutex          m_dbgMutex;     // debug/reset mutex
     bool            m_quit;
-    Z80SystemBase   *m_z80;
+    Z80System       *m_z80System;
 };
 
 #endif

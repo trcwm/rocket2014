@@ -30,22 +30,22 @@ SOURCES += main.cpp\
         disasmview.cpp \
         registerwindow.cpp \
         z80systemthread.cpp \
-        z80systembase.cpp \
-        z80system_z80ex.cpp \
         ../contrib/z80ex-1.1.19/z80ex.c \
-        ../contrib/z80ex-1.1.19/z80ex_dasm.c
+        ../contrib/z80ex-1.1.19/z80ex_dasm.c \
+        z80system.cpp \
+        z80cpubase.cpp
 
 HEADERS  += mainwindow.h \
-            z80systembase.h \
             textblitter.h \
             consoleview.h \
             disasmmodel.h \
             disasmview.h \
             registerwindow.h \
             z80systemthread.h \
-            z80system_z80ex.h \
             ../contrib/z80ex-1.1.19/include/z80ex.h \
-            ../contrib/z80ex-1.1.19/include/z80ex_dasm.h
+            ../contrib/z80ex-1.1.19/include/z80ex_dasm.h \
+            z80system.h \
+            z80cpubase.h
 
 FORMS    += mainwindow.ui
 
