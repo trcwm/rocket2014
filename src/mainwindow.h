@@ -5,6 +5,9 @@
 #include <QTimer>
 #include <QTextEdit>
 #include <QLabel>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QHBoxLayout>
 #include <QSettings>
 
 #include "z80systemthread.h"
@@ -39,6 +42,8 @@ private slots:
 
     void on_actionResume_triggered();
 
+    void breakpointEnableTriggered(bool state);
+
 private:
     /** update the run state display in the GUI */
     void updateRunState(bool state);
@@ -52,6 +57,11 @@ private:
     //permanent controls for the status bar
     QLabel          *m_filenameLabel;
     QLabel          *m_runStateLabel;
+
+    //breakpoint address setting
+    QHBoxLayout     *m_brkLayout;
+    QCheckBox       *m_brkEnabled;
+    QLineEdit       *m_brkAddressEdit;
 
     // timer for updating the debug displays
     QTimer          *m_debugTimer;

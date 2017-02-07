@@ -13,7 +13,7 @@
 #include "z80system.h"
 
 Z80SystemThread::Z80SystemThread(ConsoleView *console, QObject *parent) :
-    QThread(parent), m_quit(false)
+    QThread(parent), m_quit(false), m_z80System(0)
 {
     m_z80System = new Z80System(console);
     reset();
@@ -82,6 +82,10 @@ void Z80SystemThread::setCPUState(bool running)
     // a mutex because this function
     // is called from the GUI thread
     QMutexLocker locker(&m_queueMutex);
+
+    if (m_z80System == 0)
+        return;
+
     m_z80System->halt(!running);
 }
 
@@ -91,7 +95,24 @@ bool Z80SystemThread::isCPURunning()
     // a mutex because this function
     // is called from the GUI thread
     QMutexLocker locker(&m_queueMutex);
+
+    if (m_z80System == 0)
+        return false;
+
     return !m_z80System->isHalted();
+}
+
+void Z80SystemThread::setBreakpoint(int32_t address)
+{
+    // we must protect the queue using
+    // a mutex because this function
+    // is called from the GUI thread
+    QMutexLocker locker(&m_queueMutex);
+
+    if (m_z80System == 0)
+        return;
+
+    m_z80System->setBreakpoint(address);
 }
 
 void Z80SystemThread::putSerialData(uint8_t c)

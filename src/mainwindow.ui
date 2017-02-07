@@ -18,7 +18,7 @@
     <item>
      <layout class="QHBoxLayout" name="mainLayout">
       <item>
-       <layout class="QFormLayout" name="debugLayout"/>
+       <layout class="QVBoxLayout" name="debugLayout"/>
       </item>
      </layout>
     </item>

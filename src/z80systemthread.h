@@ -51,6 +51,11 @@ public:
         return m_z80System;
     }
 
+    /** set an instruction address breakpoint.
+        set to -1 to disable.
+    */
+    void setBreakpoint(int32_t address);
+
 protected:
     virtual void run();
 

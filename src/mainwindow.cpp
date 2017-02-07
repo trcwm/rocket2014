@@ -21,6 +21,16 @@ MainWindow::MainWindow(QWidget *parent) :
     m_disasmView = new DisasmView(this);
     ui->debugLayout->addWidget(m_disasmView);
 
+    m_brkLayout = new QHBoxLayout();
+    m_brkEnabled = new QCheckBox("Enable");
+    m_brkEnabled->setFocusPolicy(Qt::NoFocus);
+    m_brkLayout->addWidget(m_brkEnabled, 0);
+    m_brkAddressEdit = new QLineEdit();
+    m_brkLayout->addWidget(m_brkAddressEdit,1);
+    ui->debugLayout->addLayout(m_brkLayout);
+
+    connect(m_brkEnabled, SIGNAL(toggled(bool)), this, SLOT(breakpointEnableTriggered(bool)));
+
     // setup the status bar
     m_filenameLabel = new QLabel();
     m_runStateLabel = new QLabel();
@@ -74,7 +84,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         return;
     }
 
-    // handle regular key events
+    // handle regular key events but skip
     if (m_console)
     {
         switch(event->key())
@@ -82,9 +92,13 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Backspace:
             m_sys->putSerialData(ANSI_BS);
             break;
+        case Qt::Key_Return:
+            m_sys->putSerialData(13);
+            break;
         default:
             QByteArray array = event->text().toLocal8Bit();
-            m_sys->putSerialData(array[0]);
+            if (array.size() != 0)
+                m_sys->putSerialData(array[0]);
             break;
         }
     }
@@ -156,6 +170,29 @@ void MainWindow::on_actionLoad_ROM_triggered()
     }
 }
 
+void MainWindow::breakpointEnableTriggered(bool state)
+{
+    if (state)
+    {
+        // check if the validity of the breakpoint address
+        QString txt = m_brkAddressEdit->text();
+        bool conversionOk = false;
+        int address = txt.toInt(&conversionOk, 16);
+        if (conversionOk)
+        {
+            m_sys->setBreakpoint(address); // disable
+        }
+        else
+        {
+            m_brkEnabled->setCheckState(Qt::Unchecked);
+            m_sys->setBreakpoint(-1); // disable
+        }
+    }
+    else
+    {
+        m_sys->setBreakpoint(-1); // disable
+    }
+}
 
 void MainWindow::on_actionReset_triggered()
 {

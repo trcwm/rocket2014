@@ -45,6 +45,11 @@ public:
         return m_isHalted;
     }
 
+    void setBreakpoint(int32_t address)
+    {
+        m_brkAddress = address;
+    }
+
 protected:
     /* static functions used by underlying Z80 C library */
     static uint8_t  ex_readMemory(Z80EX_CONTEXT *ctx, uint16_t address, int m1_state, void *userdata);
@@ -65,7 +70,8 @@ protected:
     virtual uint8_t readIO(uint16_t address) = 0;
     virtual void    writeIO(uint16_t address, uint8_t data) = 0;
 
-    bool m_isHalted;
+    int32_t m_brkAddress;   // != -1 if a breakpoint has been set
+    bool    m_isHalted;
 };
 
 

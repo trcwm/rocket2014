@@ -60,14 +60,6 @@ uint8_t Z80System::readMemory(uint16_t address, int m1_state)
     // 0x0000 .. 0x1FFF ROM (8k)
     // 0x8000 .. 0xFFFF RAM (32k)
 
-#if 0
-    if ((address == 0x015B) && (m1_state == 1))
-    {
-        // instruction fetch at address 0x163
-        m_isHalted = true;
-    }
-#endif
-
     if (address <= 0x1FFF)
     {
         return m_ROM[address];

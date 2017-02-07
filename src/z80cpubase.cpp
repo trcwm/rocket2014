@@ -93,8 +93,15 @@ void Z80CPUBase::execute(uint32_t instructions)
 uint8_t Z80CPUBase::ex_readMemory(Z80EX_CONTEXT *ctx, uint16_t address, int m1_state, void *userdata)
 {
     if (userdata != 0)
-    {
+    {        
         Z80CPUBase *obj = (Z80CPUBase*)userdata;
+
+        // check for a breakpoint
+        if (obj->getRegister(REG_PC) == obj->m_brkAddress)
+        {
+            obj->m_isHalted = true;
+        }
+
         return obj->readMemory(address, m1_state);
     }
     return 0;
