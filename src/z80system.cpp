@@ -54,11 +54,19 @@ bool Z80System::putSerialData(uint8_t c)
 }
 
 /* Memory access functions */
-uint8_t Z80System::readMemory(uint16_t address)
+uint8_t Z80System::readMemory(uint16_t address, int m1_state)
 {
     // memory map:
     // 0x0000 .. 0x1FFF ROM (8k)
     // 0x8000 .. 0xFFFF RAM (32k)
+
+#if 0
+    if ((address == 0x015B) && (m1_state == 1))
+    {
+        // instruction fetch at address 0x163
+        m_isHalted = true;
+    }
+#endif
 
     if (address <= 0x1FFF)
     {
@@ -79,8 +87,8 @@ uint16_t Z80System::readMemory16(uint16_t address)
     // 0x0000 .. 0x1FFF ROM (8k)
     // 0x8000 .. 0xFFFF RAM (32k)
 
-    uint16_t word = ((uint16_t)readMemory(address)) << 16;
-    word |= ((uint16_t)readMemory(address+1));
+    uint16_t word = ((uint16_t)readMemory(address,0)) << 16;
+    word |= ((uint16_t)readMemory(address+1,0));
 
     return word;
 }

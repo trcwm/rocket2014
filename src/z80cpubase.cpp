@@ -2,7 +2,7 @@
 #include <QMutexLocker>
 #include "z80cpubase.h"
 
-Z80CPUBase::Z80CPUBase()
+Z80CPUBase::Z80CPUBase() : m_isHalted(false)
 {
     m_context = z80ex_create(
                 ex_readMemory, this,
@@ -18,6 +18,7 @@ void Z80CPUBase::reset()
     if (m_context == 0) return;
 
     z80ex_reset(m_context);
+    m_isHalted = false;
 }
 
 void Z80CPUBase::interrupt()
@@ -48,9 +49,9 @@ uint16_t Z80CPUBase::getRegister(const reg_t regID)
     case REG_L:
         return z80ex_get_reg(m_context, regHL) & 0xFF;
     case REG_IX:
-        return z80ex_get_reg(m_context, regBC);
+        return z80ex_get_reg(m_context, regIX);
     case REG_IY:
-        return z80ex_get_reg(m_context, regDE);
+        return z80ex_get_reg(m_context, regIY);
     case REG_BC:
         return z80ex_get_reg(m_context, regBC);
     case REG_DE:
@@ -82,8 +83,11 @@ void Z80CPUBase::execute(uint32_t instructions)
 {
     if (m_context == 0) return;
 
-    for(uint32_t i=0; i<instructions; i++)
+    while((instructions > 0) && (!m_isHalted))
+    {
         z80ex_step(m_context);
+        instructions--;
+    }
 }
 
 uint8_t Z80CPUBase::ex_readMemory(Z80EX_CONTEXT *ctx, uint16_t address, int m1_state, void *userdata)
@@ -91,7 +95,7 @@ uint8_t Z80CPUBase::ex_readMemory(Z80EX_CONTEXT *ctx, uint16_t address, int m1_s
     if (userdata != 0)
     {
         Z80CPUBase *obj = (Z80CPUBase*)userdata;
-        return obj->readMemory(address);
+        return obj->readMemory(address, m1_state);
     }
     return 0;
 }
@@ -101,7 +105,7 @@ uint8_t Z80CPUBase::ex_readMemory(uint16_t address, void *userdata)
     if (userdata != 0)
     {
         Z80CPUBase *obj = (Z80CPUBase*)userdata;
-        return obj->readMemory(address);
+        return obj->readMemory(address, 0);
     }
     return 0;
 }

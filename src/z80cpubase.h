@@ -7,6 +7,7 @@
 #define Z80CPUBase_h
 
 #include <stdint.h>
+#include <vector>
 #include "disasmmodel.h"
 
 extern "C"
@@ -34,6 +35,16 @@ public:
     virtual void interrupt();
     virtual void execute(uint32_t instructions);
 
+    void halt(bool state=true)
+    {
+        m_isHalted = state;
+    }
+
+    bool isHalted() const
+    {
+        return m_isHalted;
+    }
+
 protected:
     /* static functions used by underlying Z80 C library */
     static uint8_t  ex_readMemory(Z80EX_CONTEXT *ctx, uint16_t address, int m1_state, void *userdata);
@@ -48,11 +59,13 @@ protected:
     /* provide functions to read/write memory and IO space
        must be overridden by user of this base class */
 
-    virtual uint8_t readMemory(uint16_t address) = 0;
+    virtual uint8_t readMemory(uint16_t address, int m1_state = -1) = 0;
     virtual uint16_t readMemory16(uint16_t address) = 0;
     virtual void    writeMemory(uint16_t address, uint8_t data) = 0;
     virtual uint8_t readIO(uint16_t address) = 0;
     virtual void    writeIO(uint16_t address, uint8_t data) = 0;
+
+    bool m_isHalted;
 };
 
 

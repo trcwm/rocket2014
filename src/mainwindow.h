@@ -40,8 +40,8 @@ private slots:
     void on_actionResume_triggered();
 
 private:
-    /** set CPU to run or halt */
-    void setRunState(bool state);
+    /** update the run state display in the GUI */
+    void updateRunState(bool state);
 
     Ui::MainWindow  *ui;
     ConsoleView     *m_console;

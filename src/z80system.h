@@ -43,7 +43,7 @@ public:
     }
 
 protected:
-    virtual uint8_t readMemory(uint16_t address) override;
+    virtual uint8_t readMemory(uint16_t address, int m1_state) override;
     virtual uint16_t readMemory16(uint16_t address) override;
     virtual void    writeMemory(uint16_t address, uint8_t data) override;
     virtual uint8_t readIO(uint16_t address) override;

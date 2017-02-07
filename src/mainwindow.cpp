@@ -38,8 +38,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_debugTimer->start(500);
 
     m_disasmView->setModel(m_sys->getSystemPtr());
-
-    setRunState(true);  // updates m_runStateLabel
 }
 
 MainWindow::~MainWindow()
@@ -93,13 +91,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 }
 
 /** set CPU to run or halt */
-void MainWindow::setRunState(bool state)
+void MainWindow::updateRunState(bool state)
 {
-    if (m_sys != 0)
-    {
-        m_sys->setCPUState(state);
-    }
-    if (state = true)
+    if (state == true)
     {
         m_runStateLabel->setText("System: Running");
     }
@@ -133,6 +127,8 @@ void MainWindow::onDebugTimer()
     m_registerView->update();
 
     m_disasmView->setViewParameters(address, address, 20);
+
+    updateRunState(m_sys->isCPURunning());
 }
 
 void MainWindow::on_actionLoad_ROM_triggered()
@@ -173,11 +169,11 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_actionHalt_triggered()
 {
-    setRunState(false);
+    m_sys->setCPUState(false);
 }
 
 
 void MainWindow::on_actionResume_triggered()
 {
-    setRunState(true);
+    m_sys->setCPUState(true);
 }

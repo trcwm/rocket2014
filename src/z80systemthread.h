@@ -39,6 +39,9 @@ public:
     /** control running of CPU */
     void setCPUState(bool running);
 
+    /** get the run state of the CPU */
+    bool isCPURunning();
+
     /** get Z80 register value */
     uint16_t getRegister(Z80System::reg_t regID);
 
@@ -55,7 +58,6 @@ protected:
     QMutex          m_queueMutex;   // serial data mutex
 
     QMutex          m_ctrlMutex;     // debug/reset/control mutex
-    bool            m_running;
     bool            m_quit;
     Z80System       *m_z80System;
 };
