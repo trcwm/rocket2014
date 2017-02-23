@@ -13,14 +13,13 @@
 #include "z80system.h"
 
 
-Z80System::Z80System(ConsoleView *console) :
-    m_console(console)
+RC2014System::RC2014System(ConsoleView *console) : Z80SystemBase(console)
 {
     m_MC6850_stat = MC6850_TXDATAEMPTY;
 }
 
 /** load a file into the ROM */
-bool Z80System::loadROM(const char *filename)
+bool RC2014System::loadROM(const char *filename)
 {
     // Load ROM
     FILE *fin = fopen(filename,"rb");
@@ -43,7 +42,7 @@ bool Z80System::loadROM(const char *filename)
     return true;
 }
 
-bool Z80System::putSerialData(uint8_t c)
+bool RC2014System::putSerialData(uint8_t c)
 {
     if (mc6850_RXEmpty())
     {
@@ -54,7 +53,7 @@ bool Z80System::putSerialData(uint8_t c)
 }
 
 /* Memory access functions */
-uint8_t Z80System::readMemory(uint16_t address, int m1_state)
+uint8_t RC2014System::readMemory(uint16_t address, int m1_state)
 {
     // memory map:
     // 0x0000 .. 0x1FFF ROM (8k)
@@ -73,7 +72,7 @@ uint8_t Z80System::readMemory(uint16_t address, int m1_state)
     return 0xFF;    // return HALT instruction
 }
 
-uint16_t Z80System::readMemory16(uint16_t address)
+uint16_t RC2014System::readMemory16(uint16_t address)
 {
     // memory map:
     // 0x0000 .. 0x1FFF ROM (8k)
@@ -85,7 +84,7 @@ uint16_t Z80System::readMemory16(uint16_t address)
     return word;
 }
 
-void Z80System::writeMemory(uint16_t address, uint8_t data)
+void RC2014System::writeMemory(uint16_t address, uint8_t data)
 {
     if (address >= 0x8000)
     {
@@ -94,7 +93,7 @@ void Z80System::writeMemory(uint16_t address, uint8_t data)
 }
 
 /* IO space access functions */
-uint8_t Z80System::readIO(uint16_t address)
+uint8_t RC2014System::readIO(uint16_t address)
 {
     switch(address & 0xFF)
     {
@@ -107,7 +106,7 @@ uint8_t Z80System::readIO(uint16_t address)
     }
 }
 
-void Z80System::writeIO(uint16_t address, uint8_t data)
+void RC2014System::writeIO(uint16_t address, uint8_t data)
 {
     switch(address & 0xFF)
     {
@@ -126,7 +125,7 @@ void Z80System::writeIO(uint16_t address, uint8_t data)
     }
 }
 
-uint8_t Z80System::mc6850_readRX()
+uint8_t RC2014System::mc6850_readRX()
 {
     if (m_MC6850_stat & MC6850_RXDATAREADY)
     {
@@ -136,12 +135,12 @@ uint8_t Z80System::mc6850_readRX()
     return 0xFF;
 }
 
-bool Z80System::mc6850_RXEmpty()
+bool RC2014System::mc6850_RXEmpty()
 {
     return !(m_MC6850_stat & MC6850_RXDATAREADY);
 }
 
-void Z80System::mc6850_writeRX(uint8_t c)
+void RC2014System::mc6850_writeRX(uint8_t c)
 {
     m_MC6850_stat |= MC6850_RXDATAREADY;
     m_MC6850_rx = c;

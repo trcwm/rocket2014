@@ -16,7 +16,7 @@
 #include <QThread>
 #include <QMutex>
 #include "consoleview.h"
-#include "z80system.h"
+#include "z80systembase.h"
 #include "z80systemthread.h"
 
 class Z80SystemThread : public QThread
@@ -43,13 +43,18 @@ public:
     bool isCPURunning();
 
     /** get Z80 register value */
-    uint16_t getRegister(Z80System::reg_t regID);
+    uint16_t getRegister(Z80SystemBase::reg_t regID);
 
     /** get full access to the Z80 subsystem */
-    Z80System* getSystemPtr()
+    Z80SystemBase* getSystemPtr()
     {
         return m_z80System;
     }
+
+    /** set the Z80 subsystem
+        Note: the thread takes ownership of the object/pointer
+    */
+    void setSystem(Z80SystemBase *system);
 
     /** set an instruction address breakpoint.
         set to -1 to disable.
@@ -64,7 +69,7 @@ protected:
 
     QMutex          m_ctrlMutex;     // debug/reset/control mutex
     bool            m_quit;
-    Z80System       *m_z80System;
+    Z80SystemBase   *m_z80System;
 };
 
 #endif

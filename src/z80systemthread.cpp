@@ -10,12 +10,15 @@
 #include <stdio.h>
 #include <QMutexLocker>
 #include "z80systemthread.h"
+
+//#include "z80sysmills.h"
 #include "z80system.h"
 
 Z80SystemThread::Z80SystemThread(ConsoleView *console, QObject *parent) :
     QThread(parent), m_quit(false), m_z80System(0)
 {
-    m_z80System = new Z80System(console);
+    m_z80System = new RC2014System(console);
+    //m_z80System = new Z80SysMills(console);
     reset();
 }
 
@@ -76,6 +79,21 @@ void Z80SystemThread::run()
     }
 }
 
+void Z80SystemThread::setSystem(Z80SystemBase *system)
+{
+    // we must protect the queue using
+    // a mutex because this function
+    // is called from the GUI thread
+    QMutexLocker locker(&m_queueMutex);
+
+    if (m_z80System != 0)
+    {
+        delete m_z80System;
+    }
+    m_z80System = system;
+    system->reset();
+}
+
 void Z80SystemThread::setCPUState(bool running)
 {
     // we must protect the queue using
@@ -124,7 +142,7 @@ void Z80SystemThread::putSerialData(uint8_t c)
     m_rxFIFO.push(c);
 }
 
-uint16_t Z80SystemThread::getRegister(Z80System::reg_t regID)
+uint16_t Z80SystemThread::getRegister(RC2014System::reg_t regID)
 {
     QMutexLocker locker(&m_ctrlMutex);
     return m_z80System->getRegister(regID);

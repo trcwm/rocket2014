@@ -7,8 +7,8 @@
 
 */
 
-#ifndef Z80SYSTEMBASE_H
-#define Z80SYSTEMBASE_H
+#ifndef Z80SYSTEM_H
+#define Z80SYSTEM_H
 
 #define MC6850_TXDATAEMPTY 0x02
 #define MC6850_RXDATAREADY 0x01
@@ -21,12 +21,13 @@
 #include <QThread>
 #include <QMutex>
 #include "z80cpubase.h"
+#include "z80systembase.h"
 #include "consoleview.h"
 
-class Z80System : public Z80CPUBase
+class RC2014System : public Z80SystemBase
 {
 public:
-    explicit Z80System(ConsoleView *console);
+    explicit RC2014System(ConsoleView *console);
 
     /** call this function to simulate serial data coming
         a device connected to the Z80System */
@@ -60,8 +61,6 @@ protected:
     uint8_t     m_MC6850_stat;
     uint8_t     m_MC6850_ctrl;
     uint8_t     m_MC6850_rx;
-
-    ConsoleView *m_console; // console to receive serial data
 };
 
 #endif
