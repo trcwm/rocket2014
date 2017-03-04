@@ -18,8 +18,10 @@ Z80SystemThread::Z80SystemThread(ConsoleView *console, QObject *parent) :
     QThread(parent), m_quit(false), m_z80System(0)
 {
     m_z80System = new RC2014System(console);
-    //m_z80System = new Z80SysMills(console);
-    reset();
+
+    // do not reset here, or the CPU will run on bogus
+    // memory contents.
+    //reset();
 }
 
 /** load a file into the ROM */
@@ -50,7 +52,9 @@ void Z80SystemThread::run()
         return;
     }
 
-    m_z80System->reset();
+    // don't reset here or the system will
+    // run on bogus memory contents
+    //m_z80System->reset();
 
     while (!m_quit)
     {

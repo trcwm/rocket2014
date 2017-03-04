@@ -27,6 +27,7 @@ SOURCES += main.cpp\
         mainwindow.cpp \
         textblitter.cpp \
         consoleview.cpp \
+        ansiconsoleview.cpp \
         disasmview.cpp \
         registerwindow.cpp \
         z80systemthread.cpp \
@@ -34,12 +35,12 @@ SOURCES += main.cpp\
         ../contrib/z80ex-1.1.19/z80ex_dasm.c \
         z80system.cpp \
         z80systembase.cpp \
-        #z80sysmills.cpp \
         z80cpubase.cpp
 
 HEADERS  += mainwindow.h \
             textblitter.h \
             consoleview.h \
+            ansiconsoleview.h \
             disasmmodel.h \
             disasmview.h \
             registerwindow.h \
@@ -48,7 +49,6 @@ HEADERS  += mainwindow.h \
             ../contrib/z80ex-1.1.19/include/z80ex_dasm.h \
             z80system.h \
             z80systembase.h \
-            #z80sysmills.h \
             z80cpubase.h
 
 FORMS    += mainwindow.ui

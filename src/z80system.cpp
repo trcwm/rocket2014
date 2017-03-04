@@ -16,6 +16,7 @@
 RC2014System::RC2014System(ConsoleView *console) : Z80SystemBase(console)
 {
     m_MC6850_stat = MC6850_TXDATAEMPTY;
+    m_isHalted = true; // start the CPU in halted state!
 }
 
 /** load a file into the ROM */

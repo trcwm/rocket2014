@@ -11,7 +11,7 @@
 #include <QSettings>
 
 #include "z80systemthread.h"
-#include "consoleview.h"
+#include "ansiconsoleview.h"
 #include "registerwindow.h"
 #include "disasmview.h"
 
@@ -49,7 +49,7 @@ private:
     void updateRunState(bool state);
 
     Ui::MainWindow  *ui;
-    ConsoleView     *m_console;
+    ANSIConsoleView *m_console;
     RegisterView    *m_registerView;
     DisasmView      *m_disasmView;
     Z80SystemThread *m_sys;

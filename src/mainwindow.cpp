@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    m_console = new ConsoleView(this);
+    m_console = new ANSIConsoleView(this);
+
     ui->mainLayout->addWidget(m_console);
 
     m_registerView = new RegisterView(this);
@@ -40,8 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // setup Z80 system and connect
     // the signals and slots
     m_sys = new Z80SystemThread(m_console, this);
-
-    m_sys->start();    
+    m_sys->start();
 
     m_debugTimer = new QTimer(this);
     connect(m_debugTimer, SIGNAL(timeout()), this, SLOT(onDebugTimer()));

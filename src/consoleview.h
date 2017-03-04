@@ -15,6 +15,7 @@
 #include <QKeyEvent>
 #include <QTimer>
 #include <QMutex>
+#include <QThread>
 #include <queue>
 #include <vector>
 #include "textblitter.h"
@@ -36,20 +37,22 @@ public:
 
     /** submit a character to the console.
         this function is multi-threading safe. */
-    void submitByte(uint8_t c);
+    virtual void submitByte(const uint8_t c);
 
-protected:
+    /** set a new foreground colour */
+    virtual void submitNewForegroundColour(const uint8_t palIdx);
+
+    /** set a new background colour */
+    virtual void submitNewBackgroundColour(const uint8_t palIdx);
+
+private:
     /** scroll the display up */
     void scrollUp();
 
     virtual void paintEvent(QPaintEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
 
-private:
     void redraw();
-
-    enum escapeState_t {CS_NORMAL, CS_ESCAPE, CS_BRACKET};
-    escapeState_t m_state;
 
     QImage      *m_image;
     TextBlitter *m_textBlitter;
@@ -68,7 +71,17 @@ private:
     std::vector<TextBlitter::ColorChar> m_framebuffer;
 
     QMutex      m_eventMutex;
-    std::queue<uint8_t> m_events;
+
+    /** event description */
+    struct event_t
+    {
+        enum {TYPE_CHAR, TYPE_FG, TYPE_BG} m_type;
+        uint8_t m_data; // character or palette number
+    };
+
+    std::queue<event_t> m_events;
+
+    Qt::HANDLE  m_creationThreadID;
 
 private slots:
     void onRefreshTimer();
