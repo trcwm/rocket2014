@@ -52,6 +52,12 @@ private slots:
 
     void on_actionClock_at_20_MHz_triggered();
 
+    void on_action32K_RAM_32K_ROM_triggered();
+
+    void on_action64K_RAM_triggered();
+
+    void on_actionLocal_echo_triggered();
+
 private:
     /** update the run state display in the GUI */
     void updateRunState(bool state);
@@ -73,6 +79,9 @@ private:
 
     // timer for updating the debug displays
     QTimer          *m_debugTimer;
+
+    // local echo for the console
+    bool m_localEcho;
 };
 
 #endif // MAINWINDOW_H

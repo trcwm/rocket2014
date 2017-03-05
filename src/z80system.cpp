@@ -13,10 +13,12 @@
 #include "z80system.h"
 
 
-RC2014System::RC2014System(ConsoleView *console) : Z80SystemBase(console)
+RC2014System::RC2014System(ConsoleView *console, systemType_t systype)
+    : Z80SystemBase(console),
+      m_systype(systype)
 {
     m_MC6850_stat = MC6850_TXDATAEMPTY;
-    m_isHalted = true; // start the CPU in halted state!
+    m_intPending  = false;
 }
 
 /** load a file into the ROM */
@@ -35,7 +37,34 @@ bool RC2014System::loadROM(const char *filename)
         return false;
 
     rewind(fin);
-    fread(m_ROM, 1, bytes, fin);
+    uint32_t address=0;
+    while(!feof(fin))
+    {
+        uint8_t data;
+        fread(&data,1,1,fin);
+        switch(m_systype)
+        {
+        case SYS_32KRAM:
+            if (address < 8192)
+            {
+                m_ROM[address] = data;
+            }
+            if ((address >= 32768) && (address <= 65535))
+            {
+                m_RAM[address] = data;
+            }
+            break;
+        case SYS_64KRAM:
+            if (address <= 65535)
+            {
+                m_RAM[address] = data;
+            }
+            break;
+        default:
+            ;
+        }
+        address++;
+    }
     fclose(fin);
 
     reset();
@@ -56,18 +85,28 @@ bool RC2014System::putSerialData(uint8_t c)
 /* Memory access functions */
 uint8_t RC2014System::readMemory(uint16_t address, int m1_state)
 {
-    // memory map:
-    // 0x0000 .. 0x1FFF ROM (8k)
-    // 0x8000 .. 0xFFFF RAM (32k)
-
-    if (address <= 0x1FFF)
+    switch(m_systype)
     {
-        return m_ROM[address];
-    }
+    case SYS_32KRAM:
+        // memory map:
+        // 0x0000 .. 0x1FFF ROM (8k)
+        // 0x8000 .. 0xFFFF RAM (32k)
 
-    if (address >= 0x8000)
-    {
+        if (address <= 0x1FFF)
+        {
+            return m_ROM[address];
+        }
+
+        if (address >= 0x8000)
+        {
+            return m_RAM[address];
+        }
+        break;
+    case SYS_64KRAM:
         return m_RAM[address];
+        break;
+    default:
+        ; // intentional
     }
 
     return 0xFF;    // return HALT instruction
@@ -75,10 +114,6 @@ uint8_t RC2014System::readMemory(uint16_t address, int m1_state)
 
 uint16_t RC2014System::readMemory16(uint16_t address)
 {
-    // memory map:
-    // 0x0000 .. 0x1FFF ROM (8k)
-    // 0x8000 .. 0xFFFF RAM (32k)
-
     uint16_t word = ((uint16_t)readMemory(address,0)) << 16;
     word |= ((uint16_t)readMemory(address+1,0));
 
@@ -87,9 +122,22 @@ uint16_t RC2014System::readMemory16(uint16_t address)
 
 void RC2014System::writeMemory(uint16_t address, uint8_t data)
 {
-    if (address >= 0x8000)
+    switch(m_systype)
     {
+    case SYS_32KRAM:
+        // memory map:
+        // 0x0000 .. 0x1FFF ROM (8k)
+        // 0x8000 .. 0xFFFF RAM (32k)
+        if (address >= 0x8000)
+        {
+            m_RAM[address] = data;
+        }
+        break;
+    case SYS_64KRAM:
         m_RAM[address] = data;
+        break;
+    default:
+        ; // intentional
     }
 }
 
@@ -113,12 +161,28 @@ void RC2014System::writeIO(uint16_t address, uint8_t data)
     {
     case 0x80:  // 68B50 control register
         m_MC6850_ctrl = data;
-        //qDebug() << "68B50 write " << data;
+        qDebug() << "68B50 write " << data;
+        // cause interrupt if TX buffer is empty
+        // and interrupt is enabled!
+        if ((m_MC6850_ctrl & 0x60) == 0x20)
+        {
+            // TX interrupt enabled
+            m_MC6850_stat |=MC6850_IRQ;  // set IRQ bit
+            m_intPending = true;
+        }
         return;
     case 0x81:  // 68B50 TX data register
         if (m_console != 0)
         {
+            m_MC6850_stat &= ~MC6850_IRQ;        // clear IRQ bit
             m_console->submitByte(data);
+            m_MC6850_stat |= MC6850_TXDATAEMPTY; // TX buffer empty!
+            if ((m_MC6850_ctrl & 0x60) == 0x20)
+            {
+                // TX interrupt enabled
+                m_MC6850_stat |= MC6850_IRQ;  // set IRQ bit
+                m_intPending = true;
+            }
         }
         return;
     default:
@@ -130,6 +194,7 @@ uint8_t RC2014System::mc6850_readRX()
 {
     if (m_MC6850_stat & MC6850_RXDATAREADY)
     {
+        m_MC6850_stat &= ~MC6850_IRQ;
         m_MC6850_stat &= ~MC6850_RXDATAREADY;
         return m_MC6850_rx;
     }
@@ -150,7 +215,7 @@ void RC2014System::mc6850_writeRX(uint8_t c)
     // so configured
     if (m_MC6850_ctrl & 0x80)
     {
-        interrupt();
+        m_intPending = true;
     }
 }
 

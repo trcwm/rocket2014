@@ -2,7 +2,7 @@
 #include <QMutexLocker>
 #include "z80cpubase.h"
 
-Z80CPUBase::Z80CPUBase() : m_isHalted(false)
+Z80CPUBase::Z80CPUBase() : m_isHalted(true), m_intPending(false)
 {
     m_context = z80ex_create(
                 ex_readMemory, this,
@@ -10,7 +10,7 @@ Z80CPUBase::Z80CPUBase() : m_isHalted(false)
                 ex_readIO, this,
                 ex_writeIO, this,
                 ex_int, this
-                );
+                );    
 }
 
 void Z80CPUBase::reset()
@@ -19,13 +19,13 @@ void Z80CPUBase::reset()
 
     z80ex_reset(m_context);
     m_isHalted = false;
+    m_intPending=false;
 }
 
 void Z80CPUBase::interrupt()
 {
     if (m_context == 0) return;
-
-    z80ex_int(m_context);
+    m_intPending = true;
 }
 
 uint16_t Z80CPUBase::getRegister(const reg_t regID)
@@ -86,6 +86,13 @@ uint32_t Z80CPUBase::execute(uint32_t instructions)
     uint32_t Tstates = 0;
     while((instructions > 0) && (!m_isHalted))
     {
+        if (m_intPending)
+        {
+            if (z80ex_int(m_context) != 0)
+            {
+                m_intPending = false;
+            }
+        }
         Tstates += z80ex_step(m_context);
         instructions--;
     }

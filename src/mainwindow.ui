@@ -53,6 +53,11 @@
     <addaction name="separator"/>
     <addaction name="actionClock_at_7_MHz"/>
     <addaction name="actionClock_at_20_MHz"/>
+    <addaction name="separator"/>
+    <addaction name="action32K_RAM_32K_ROM"/>
+    <addaction name="action64K_RAM"/>
+    <addaction name="separator"/>
+    <addaction name="actionLocal_echo"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -114,6 +119,33 @@
    </property>
    <property name="text">
     <string>Clock at 20 MHz</string>
+   </property>
+  </action>
+  <action name="action32K_RAM_32K_ROM">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>8K ROM + 32K RAM</string>
+   </property>
+   <property name="toolTip">
+    <string>32K ROM + 32K RAM</string>
+   </property>
+  </action>
+  <action name="action64K_RAM">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>64K RAM</string>
+   </property>
+  </action>
+  <action name="actionLocal_echo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Local terminal echo</string>
    </property>
   </action>
  </widget>

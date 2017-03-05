@@ -85,11 +85,11 @@ ConsoleView::ConsoleView(QWidget *parent, uint32_t rows, uint32_t columns)
     , m_textBlitter(new TextBlitter())
     , m_lineCount(rows)
     , m_colCount(columns)
-    , m_bgcolor(0)
     , cx(0)
     , cy(0)
     , m_bgPalIdx(0)
     , m_fgPalIdx(2)
+    , m_LFasCRLF(true)
 {
     setFocusPolicy (Qt::StrongFocus);
     m_framebuffer.resize(m_lineCount * m_colCount);
@@ -143,7 +143,6 @@ void ConsoleView::resizeEvent(QResizeEvent *event)
     }
 
     m_image = new QImage(w,h, QImage::Format_RGB32);
-    m_image->fill(m_bgcolor);
 
     // make everything dirty..
     for(uint32_t y=0; y<m_lineCount; y++)
@@ -245,6 +244,10 @@ void ConsoleView::onRefreshTimer()
                 {
                     scrollUp();
                     cy = m_lineCount-1;
+                }
+                if (m_LFasCRLF)
+                {
+                    cx = 0;
                 }
                 break;
             case 12:    // clear screen / form feed

@@ -32,6 +32,9 @@ public:
     virtual uint32_t getDisassembly(uint16_t address, QString &txt);
 
     virtual void reset();
+
+    /** send interrupt to Z80, returns number of Tstates if
+        accepted, otherwise it returns 0. */
     virtual void interrupt();
 
     /** execute a set number of instructions,
@@ -76,6 +79,7 @@ protected:
 
     int32_t m_brkAddress;   // != -1 if a breakpoint has been set
     bool    m_isHalted;
+    bool    m_intPending;
 };
 
 

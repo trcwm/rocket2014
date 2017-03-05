@@ -14,6 +14,7 @@
 #define MC6850_RXDATAREADY 0x01
 #define MC6850_DCD_N 0x04
 #define MC6850_CTS_N 0x08
+#define MC6850_IRQ 0x80
 
 #include <stdint.h>
 #include <queue>
@@ -27,7 +28,9 @@
 class RC2014System : public Z80SystemBase
 {
 public:
-    explicit RC2014System(ConsoleView *console);
+    enum systemType_t {SYS_32KRAM, SYS_64KRAM};
+
+    explicit RC2014System(ConsoleView *console, systemType_t systype = SYS_32KRAM);
 
     /** call this function to simulate serial data coming
         a device connected to the Z80System */
@@ -43,12 +46,20 @@ public:
         Z80CPUBase::reset();
     }
 
+    /** change the system type */
+    void setSystemType(systemType_t systype)
+    {
+        m_systype = systype;
+    }
+
 protected:
     virtual uint8_t readMemory(uint16_t address, int m1_state) override;
     virtual uint16_t readMemory16(uint16_t address) override;
     virtual void    writeMemory(uint16_t address, uint8_t data) override;
     virtual uint8_t readIO(uint16_t address) override;
     virtual void    writeIO(uint16_t address, uint8_t data) override;
+
+    systemType_t m_systype;
 
     // memories
     uint8_t     m_ROM[65536];

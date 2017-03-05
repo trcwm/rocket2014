@@ -45,6 +45,12 @@ public:
     /** set a new background colour */
     virtual void submitNewBackgroundColour(const uint8_t palIdx);
 
+    /** cause a LF to be interpreted as a line feed and carriage return */
+    void interpretLFasLFCR(bool enabled = true)
+    {
+        m_LFasCRLF = enabled;
+    }
+
 private:
     /** scroll the display up */
     void scrollUp();
@@ -62,7 +68,6 @@ private:
     uint32_t    cx; // cursor position x
     uint32_t    cy; // cursor position y
 
-    uint32_t    m_bgcolor;
     uint32_t    m_bgPalIdx;
     uint32_t    m_fgPalIdx;
 
@@ -72,16 +77,19 @@ private:
 
     QMutex      m_eventMutex;
 
-    /** event description */
+    /** terminal event description */
     struct event_t
     {
         enum {TYPE_CHAR, TYPE_FG, TYPE_BG} m_type;
         uint8_t m_data; // character or palette number
     };
 
+    /** terminal event queue */
     std::queue<event_t> m_events;
 
     Qt::HANDLE  m_creationThreadID;
+
+    bool m_LFasCRLF;
 
 private slots:
     void onRefreshTimer();

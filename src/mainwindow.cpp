@@ -8,10 +8,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "aboutdialog.h"
+#include "z80system.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    m_localEcho(false)
 {
     ui->setupUi(this);
     m_console = new ANSIConsoleView(this);
@@ -49,13 +51,21 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_debugTimer, SIGNAL(timeout()), this, SLOT(onDebugTimer()));
     m_debugTimer->start(500);
 
-    // setup a mutally exclusive group for
+    // setup a mutually exclusive group for
     // system clock speed
 
     QActionGroup *clockspeedGroup = new QActionGroup(this);
     clockspeedGroup->addAction(ui->actionClock_at_7_MHz);
     clockspeedGroup->addAction(ui->actionClock_at_20_MHz);
     ui->actionClock_at_7_MHz->setChecked(true);
+
+    // setup a mutually exclusive group for
+    // memory expansion type
+
+    QActionGroup *sysconfigGroup = new QActionGroup(this);
+    sysconfigGroup->addAction(ui->action32K_RAM_32K_ROM);
+    sysconfigGroup->addAction(ui->action64K_RAM);
+    ui->action32K_RAM_32K_ROM->setChecked(true);
 
     m_disasmView->setModel(m_sys->getSystemPtr());
 }
@@ -101,14 +111,28 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         {
         case Qt::Key_Backspace:
             m_sys->putSerialData(ANSI_BS);
+            if (m_localEcho)
+            {
+                m_console->submitByte(ANSI_BS);
+            }
             break;
         case Qt::Key_Return:
             m_sys->putSerialData(13);
+            m_sys->putSerialData(10);
+            if (m_localEcho)
+            {
+                m_console->submitByte(13);
+                m_console->submitByte(10);
+            }
             break;
         default:
             QByteArray array = event->text().toLocal8Bit();
             if (array.size() != 0)
+            {
                 m_sys->putSerialData(array[0]);
+                if (m_localEcho)
+                    m_console->submitByte(array[0]);
+            }
             break;
         }
     }
@@ -211,6 +235,8 @@ void MainWindow::on_actionReset_triggered()
 
 void MainWindow::on_actionQuit_triggered()
 {
+    m_sys->quit();
+    m_sys->wait(5000);  //max 5. second wait
     close();
 }
 
@@ -244,4 +270,30 @@ void MainWindow::on_actionClock_at_7_MHz_triggered()
 void MainWindow::on_actionClock_at_20_MHz_triggered()
 {
     m_sys->setClockRate(20000000);
+}
+
+void MainWindow::on_action32K_RAM_32K_ROM_triggered()
+{
+    RC2014System* ptr = (RC2014System*)m_sys->getSystemPtr();
+    ptr->setSystemType(RC2014System::SYS_32KRAM);
+}
+
+void MainWindow::on_action64K_RAM_triggered()
+{
+    RC2014System* ptr = (RC2014System*)m_sys->getSystemPtr();
+    ptr->setSystemType(RC2014System::SYS_64KRAM);
+}
+
+void MainWindow::on_actionLocal_echo_triggered()
+{
+    if (ui->actionLocal_echo->isChecked())
+    {
+        m_localEcho = false;
+    }
+    else
+    {
+        m_localEcho = true;
+    }
+
+    ui->actionLocal_echo->setChecked(m_localEcho);
 }

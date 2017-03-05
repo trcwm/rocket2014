@@ -27,6 +27,7 @@ class Z80SystemThread : public QThread
 
 public:
     explicit Z80SystemThread(ConsoleView *console, QObject *parent = 0);
+
     void quit() {m_quit = true;}
 
     /** send serial data to the Z80 system */
@@ -76,7 +77,8 @@ protected:
 
     QMutex          m_ctrlMutex;        // debug/reset/control mutex
     bool            m_quit;
-    Z80SystemBase   *m_z80System;
+
+    Z80SystemBase  *m_z80System;
     uint32_t        m_z80ClockRateMHz;  // the Z80 clock in MHz
 };
 
