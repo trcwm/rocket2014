@@ -22,6 +22,8 @@ class Z80CPUBase : public DisasmModel
 public:
     Z80CPUBase();
 
+    virtual ~Z80CPUBase() {}
+
     /** register definitions for getRegister() */
     enum reg_t {REG_A, REG_B, REG_C, REG_D, REG_E, REG_H, REG_L, REG_IX, REG_IY, REG_SP, REG_PC, REG_HL, REG_DE, REG_BC};
 

@@ -27,9 +27,9 @@ public:
     struct ColorChar
     {
             uint8_t m_char;
+            uint8_t m_flags;
             uint8_t m_foreground;
             uint8_t m_background;
-            uint8_t m_flags;
 
             ColorChar ()
                 : m_char(0)
