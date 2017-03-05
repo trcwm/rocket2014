@@ -19,8 +19,7 @@
 ANSIConsoleView::ANSIConsoleView(QWidget *parent, uint32_t rows, uint32_t columns)
     : ConsoleView(parent, rows, columns)
 {
-    m_state = STATE_START;
-    m_ANSIEnabled = true;
+    reset();
 }
 
 void ANSIConsoleView::submitByte(const uint8_t c)
@@ -31,6 +30,15 @@ void ANSIConsoleView::submitByte(const uint8_t c)
 void ANSIConsoleView::enableANSIMode(bool enabled)
 {
     m_ANSIEnabled = enabled;
+}
+
+void ANSIConsoleView::reset()
+{
+    m_ANSIEnabled = true;
+    m_state = STATE_START;
+    submitNewBackgroundColour(0);   // black
+    submitNewForegroundColour(2);   // green
+    submitByte(12);                 // form-feed / clear screen
 }
 
 void ANSIConsoleView::gotoNextState(const uint8_t byte)

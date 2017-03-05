@@ -32,6 +32,8 @@ public slots:
     void onDebugTimer();
 
 private slots:
+    void breakpointEnableTriggered(bool state);
+
     void on_actionLoad_ROM_triggered();
 
     void on_actionReset_triggered();
@@ -42,7 +44,7 @@ private slots:
 
     void on_actionResume_triggered();
 
-    void breakpointEnableTriggered(bool state);
+    void on_actionReset_terminal_triggered();
 
 private:
     /** update the run state display in the GUI */

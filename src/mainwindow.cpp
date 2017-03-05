@@ -214,3 +214,8 @@ void MainWindow::on_actionResume_triggered()
 {
     m_sys->setCPUState(true);
 }
+
+void MainWindow::on_actionReset_terminal_triggered()
+{
+    m_console->reset();
+}

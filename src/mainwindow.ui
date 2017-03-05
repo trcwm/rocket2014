@@ -48,6 +48,8 @@
     <addaction name="actionReset"/>
     <addaction name="actionHalt"/>
     <addaction name="actionResume"/>
+    <addaction name="separator"/>
+    <addaction name="actionReset_terminal"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSystem"/>
@@ -76,6 +78,11 @@
   <action name="actionResume">
    <property name="text">
     <string>Resume</string>
+   </property>
+  </action>
+  <action name="actionReset_terminal">
+   <property name="text">
+    <string>Reset terminal</string>
    </property>
   </action>
  </widget>

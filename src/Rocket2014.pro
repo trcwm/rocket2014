@@ -4,6 +4,7 @@
 #
 #-------------------------------------------------
 
+CONFIG   += c++11
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -11,7 +12,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Rocket2014
 TEMPLATE = app
 
-DEFINES += _CRT_SECURE_NO_WARNINGS
+## Windows / Visual studio specific stuff
+win32 {
+    DEFINES += _CRT_SECURE_NO_WARNINGS
+}
 
 # z80ex stuff
 DEFINES += WORDS_LITTLE_ENDIAN

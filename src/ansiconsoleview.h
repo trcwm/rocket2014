@@ -29,6 +29,10 @@ public:
     /** enable ANSI mode */
     void enableANSIMode(bool enabled=true);
 
+    /** reset the terminal to standard colours
+        and clear the screen */
+    void reset();
+
 protected:
     void gotoNextState(const uint8_t byte);
 
