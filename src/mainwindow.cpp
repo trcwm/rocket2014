@@ -67,6 +67,9 @@ MainWindow::MainWindow(QWidget *parent) :
     sysconfigGroup->addAction(ui->action64K_RAM);
     ui->action32K_RAM_32K_ROM->setChecked(true);
 
+    ui->actionLocal_echo->setCheckable(true);
+    ui->actionLocal_echo->setActionGroup(NULL);
+
     m_disasmView->setModel(m_sys->getSystemPtr());
 }
 
@@ -284,16 +287,8 @@ void MainWindow::on_action64K_RAM_triggered()
     ptr->setSystemType(RC2014System::SYS_64KRAM);
 }
 
-void MainWindow::on_actionLocal_echo_triggered()
-{
-    if (ui->actionLocal_echo->isChecked())
-    {
-        m_localEcho = false;
-    }
-    else
-    {
-        m_localEcho = true;
-    }
 
-    ui->actionLocal_echo->setChecked(m_localEcho);
+void MainWindow::on_actionLocal_echo_triggered(bool checked)
+{
+    m_localEcho = checked;
 }

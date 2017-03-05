@@ -293,7 +293,25 @@ void ConsoleView::onRefreshTimer()
         {
             m_fgPalIdx = e.m_data;
         }
-
+        else if (e.m_type == event_t::TYPE_CURSOR_HOME)
+        {
+            // mark old cursor position as dirty
+            m_framebuffer[cx+cy*m_colCount].m_flags |= TextBlitter::m_dirtyFlag;
+            cx = 0;
+            cy = 0;
+        }
+        else if (e.m_type == event_t::TYPE_CURSOR_X)
+        {
+            // mark old cursor position as dirty
+            m_framebuffer[cx+cy*m_colCount].m_flags |= TextBlitter::m_dirtyFlag;
+            if (e.m_data < m_colCount) cx = e.m_data;
+        }
+        else if (e.m_type == event_t::TYPE_CURSOR_Y)
+        {
+            // mark old cursor position as dirty
+            m_framebuffer[cx+cy*m_colCount].m_flags |= TextBlitter::m_dirtyFlag;
+            if (e.m_data < m_lineCount) cy = e.m_data;
+        }
     } // end while
     redraw();
 }
@@ -331,6 +349,51 @@ void ConsoleView::submitNewForegroundColour(const uint8_t palIdx)
 void ConsoleView::submitNewBackgroundColour(const uint8_t palIdx)
 {
     event_t evt = {event_t::TYPE_BG, palIdx};
+    if (QThread::currentThreadId() != m_creationThreadID)
+    {
+        // get mutex if not called from the GUI thread
+        QMutexLocker locker(&m_eventMutex);
+        m_events.push(evt);
+    }
+    else
+    {
+        m_events.push(evt);
+    }
+}
+
+void ConsoleView::submitCursorHome()
+{
+    event_t evt = {event_t::TYPE_CURSOR_HOME, 0};
+    if (QThread::currentThreadId() != m_creationThreadID)
+    {
+        // get mutex if not called from the GUI thread
+        QMutexLocker locker(&m_eventMutex);
+        m_events.push(evt);
+    }
+    else
+    {
+        m_events.push(evt);
+    }
+}
+
+void ConsoleView::submitCursorX(uint8_t x)
+{
+    event_t evt = {event_t::TYPE_CURSOR_X, x};
+    if (QThread::currentThreadId() != m_creationThreadID)
+    {
+        // get mutex if not called from the GUI thread
+        QMutexLocker locker(&m_eventMutex);
+        m_events.push(evt);
+    }
+    else
+    {
+        m_events.push(evt);
+    }
+}
+
+void ConsoleView::submitCursorY(uint8_t y)
+{
+    event_t evt = {event_t::TYPE_CURSOR_HOME, y};
     if (QThread::currentThreadId() != m_creationThreadID)
     {
         // get mutex if not called from the GUI thread

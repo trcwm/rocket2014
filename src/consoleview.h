@@ -51,6 +51,12 @@ public:
         m_LFasCRLF = enabled;
     }
 
+    void submitCursorHome();
+
+    void submitCursorX(uint8_t x);
+
+    void submitCursorY(uint8_t y);
+
 private:
     /** scroll the display up */
     void scrollUp();
@@ -80,7 +86,8 @@ private:
     /** terminal event description */
     struct event_t
     {
-        enum {TYPE_CHAR, TYPE_FG, TYPE_BG} m_type;
+        enum {TYPE_CHAR, TYPE_FG, TYPE_BG, TYPE_CURSOR_X, TYPE_CURSOR_Y,
+              TYPE_CURSOR_HOME} m_type;
         uint8_t m_data; // character or palette number
     };
 

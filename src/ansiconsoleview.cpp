@@ -123,6 +123,25 @@ void ANSIConsoleView::parse(std::string &s)
     int typecmd;
     switch(last)
     {
+    case 'H':   // move cursor to position
+        while(getline(istream, param, ';'))
+        {
+            strings.push_back(param);
+        }
+        // check if we have parameters,
+        // if not, we have a home command
+        if (strings.size() == 0) submitCursorHome();
+
+        if (strings.size() == 2)
+        {
+            // we have x,y coordinates
+            uint8_t x = atoi(strings[0].c_str());
+            uint8_t y = atoi(strings[1].c_str());
+            submitCursorX(x);
+            submitCursorY(y);
+        }
+
+        break;
     case 'm':   // set SGR parameters
         while(getline(istream, param, ';'))
         {

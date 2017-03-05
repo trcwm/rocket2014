@@ -56,7 +56,7 @@ private slots:
 
     void on_action64K_RAM_triggered();
 
-    void on_actionLocal_echo_triggered();
+    void on_actionLocal_echo_triggered(bool checked);
 
 private:
     /** update the run state display in the GUI */
