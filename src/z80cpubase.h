@@ -33,7 +33,11 @@ public:
 
     virtual void reset();
     virtual void interrupt();
-    virtual void execute(uint32_t instructions);
+
+    /** execute a set number of instructions,
+        returning the number of Z80 clock cycles
+        that it took to execute them */
+    virtual uint32_t execute(uint32_t instructions);
 
     void halt(bool state=true)
     {

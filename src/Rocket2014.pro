@@ -39,7 +39,8 @@ SOURCES += main.cpp\
         ../contrib/z80ex-1.1.19/z80ex_dasm.c \
         z80system.cpp \
         z80systembase.cpp \
-        z80cpubase.cpp
+        z80cpubase.cpp \
+    aboutdialog.cpp
 
 HEADERS  += mainwindow.h \
             textblitter.h \
@@ -53,7 +54,9 @@ HEADERS  += mainwindow.h \
             ../contrib/z80ex-1.1.19/include/z80ex_dasm.h \
             z80system.h \
             z80systembase.h \
-            z80cpubase.h
+            z80cpubase.h \
+    aboutdialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    aboutdialog.ui
 

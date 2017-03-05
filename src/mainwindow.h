@@ -46,6 +46,12 @@ private slots:
 
     void on_actionReset_terminal_triggered();
 
+    void on_actionAbout_triggered();
+
+    void on_actionClock_at_7_MHz_triggered();
+
+    void on_actionClock_at_20_MHz_triggered();
+
 private:
     /** update the run state display in the GUI */
     void updateRunState(bool state);

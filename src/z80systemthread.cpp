@@ -17,11 +17,22 @@
 Z80SystemThread::Z80SystemThread(ConsoleView *console, QObject *parent) :
     QThread(parent), m_quit(false), m_z80System(0)
 {
+    m_z80ClockRateMHz = 7000000; // 7 MHz
     m_z80System = new RC2014System(console);
 
     // do not reset here, or the CPU will run on bogus
     // memory contents.
     //reset();
+}
+
+void Z80SystemThread::setClockRate(uint32_t MHz)
+{
+    // we must protect the queue using
+    // a mutex because this function
+    // is called from the GUI thread
+    QMutexLocker locker(&m_queueMutex);
+
+    m_z80ClockRateMHz = MHz; // 7 MHz
 }
 
 /** load a file into the ROM */
@@ -56,8 +67,11 @@ void Z80SystemThread::run()
     // run on bogus memory contents
     //m_z80System->reset();
 
+    m_elapsedTimer.start();
     while (!m_quit)
     {
+        m_elapsedTimer.restart();
+
         // check for serial data in the queue
         m_queueMutex.lock();
         if (m_rxFIFO.size() != 0)
@@ -71,9 +85,24 @@ void Z80SystemThread::run()
 
         if (!m_z80System->isHalted())
         {
+            // lock the control mutex so
+            // the GUI thread won't interfere.
             m_ctrlMutex.lock();
-            m_z80System->execute(10000);
+            uint32_t Tstates = m_z80System->execute(10000);
             m_ctrlMutex.unlock();
+
+            // calculate the time an actual Z80 would take
+            // to run the 1000 instructions
+            uint32_t z80time_ms = Tstates*1000/m_z80ClockRateMHz;
+
+            // actual time elapsed in milliseconds
+            quint64 elapsedTime = m_elapsedTimer.elapsed(); // milliseconds
+
+            // calculate actual remaining time to delay
+            if (z80time_ms > elapsedTime)
+            {
+                msleep(z80time_ms - elapsedTime);
+            }
         }
         else
         {

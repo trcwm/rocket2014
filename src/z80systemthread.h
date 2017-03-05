@@ -15,6 +15,8 @@
 #include <QObject>
 #include <QThread>
 #include <QMutex>
+#include <QElapsedTimer>
+
 #include "consoleview.h"
 #include "z80systembase.h"
 #include "z80systemthread.h"
@@ -56,6 +58,9 @@ public:
     */
     void setSystem(Z80SystemBase *system);
 
+    /** set the clock rate of the Z80 in MHz */
+    void setClockRate(uint32_t MHz);
+
     /** set an instruction address breakpoint.
         set to -1 to disable.
     */
@@ -65,11 +70,14 @@ protected:
     virtual void run();
 
     std::queue<uint8_t> m_rxFIFO;
-    QMutex          m_queueMutex;   // serial data mutex
+    QMutex          m_queueMutex;       // serial data mutex
 
-    QMutex          m_ctrlMutex;     // debug/reset/control mutex
+    QElapsedTimer   m_elapsedTimer;     // for CPU throttling
+
+    QMutex          m_ctrlMutex;        // debug/reset/control mutex
     bool            m_quit;
     Z80SystemBase   *m_z80System;
+    uint32_t        m_z80ClockRateMHz;  // the Z80 clock in MHz
 };
 
 #endif

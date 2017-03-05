@@ -3,9 +3,11 @@
 #include <QClipboard>
 #include <QFontDatabase>
 #include <QSettings>
+#include <QActionGroup>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "aboutdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -46,6 +48,14 @@ MainWindow::MainWindow(QWidget *parent) :
     m_debugTimer = new QTimer(this);
     connect(m_debugTimer, SIGNAL(timeout()), this, SLOT(onDebugTimer()));
     m_debugTimer->start(500);
+
+    // setup a mutally exclusive group for
+    // system clock speed
+
+    QActionGroup *clockspeedGroup = new QActionGroup(this);
+    clockspeedGroup->addAction(ui->actionClock_at_7_MHz);
+    clockspeedGroup->addAction(ui->actionClock_at_20_MHz);
+    ui->actionClock_at_7_MHz->setChecked(true);
 
     m_disasmView->setModel(m_sys->getSystemPtr());
 }
@@ -218,4 +228,20 @@ void MainWindow::on_actionResume_triggered()
 void MainWindow::on_actionReset_terminal_triggered()
 {
     m_console->reset();
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    AboutDialog *dialog = new AboutDialog(this);
+    dialog->exec();
+}
+
+void MainWindow::on_actionClock_at_7_MHz_triggered()
+{
+    m_sys->setClockRate(7000000);
+}
+
+void MainWindow::on_actionClock_at_20_MHz_triggered()
+{
+    m_sys->setClockRate(20000000);
 }

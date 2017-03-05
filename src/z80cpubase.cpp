@@ -79,15 +79,17 @@ uint32_t Z80CPUBase::getDisassembly(uint16_t address, QString &txt)
     return instrLen;
 }
 
-void Z80CPUBase::execute(uint32_t instructions)
+uint32_t Z80CPUBase::execute(uint32_t instructions)
 {
-    if (m_context == 0) return;
+    if (m_context == 0) return 0;
 
+    uint32_t Tstates = 0;
     while((instructions > 0) && (!m_isHalted))
     {
-        z80ex_step(m_context);
+        Tstates += z80ex_step(m_context);
         instructions--;
     }
+    return Tstates;
 }
 
 uint8_t Z80CPUBase::ex_readMemory(Z80EX_CONTEXT *ctx, uint16_t address, int m1_state, void *userdata)
